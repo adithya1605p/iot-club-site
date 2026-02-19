@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-white antialiased font-sans;
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 50%),
+      linear-gradient(rgba(189, 0, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(189, 0, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-glass backdrop-blur-md border border-white/10 rounded-xl shadow-lg;
+  }
+  
+  .neon-text {
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+  }
+  
+  .neon-border {
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+  }
+}
