@@ -9,7 +9,7 @@ const Events = () => {
 
     // Helper to generate image paths
     const getImages = (prefix, count, ext = 'jpeg') =>
-        Array.from({ length: count }, (_, i) => `/src/assets/events/${prefix}_${i + 1}.${ext}`);
+        Array.from({ length: count }, (_, i) => `/events/${prefix}_${i + 1}.${ext}`);
 
     const events = [
         {
@@ -18,7 +18,7 @@ const Events = () => {
             date: "22nd - 23rd August",
             time: "2 Days Event",
             location: "GCET Campus",
-            image: "/src/assets/events/bid2build_1.jpeg",
+            image: "/events/bid2build_1.jpeg",
             category: "Ideathon",
             desc: "A flagship technical event where students bid for problem statements and built innovative solutions. Themes included Open Innovation, Agritech, Edutech, and Health Care. Over ₹16,000 in prizes were awarded to the top teams.",
             status: "Completed",
@@ -30,22 +30,22 @@ const Events = () => {
             date: "14th - 15th Dec 2023",
             time: "2 Days Event",
             location: "GCET Campus",
-            image: "/src/assets/events/iotverse_1.png",
+            image: "/events/iotverse_1.png",
             category: "Flagship Event",
             desc: "A two-day mega event featuring expert guest lectures by Mr. Bharadwaj Arvapally, Project Exhibitions, Idea Pitching, and Quiz competitions. Students explored domains like Healthcare, Smart Education, and Smart Agriculture.",
             status: "Completed",
             gallery: [
-                '/src/assets/events/iotverse_1.png',
-                '/src/assets/events/iotverse_2.jpeg',
-                '/src/assets/events/iotverse_3.png',
-                '/src/assets/events/iotverse_4.jpeg',
-                '/src/assets/events/iotverse_5.jpeg',
-                '/src/assets/events/iotverse_6.jpeg',
-                '/src/assets/events/iotverse_7.jpeg',
-                '/src/assets/events/iotverse_8.jpeg',
-                '/src/assets/events/iotverse_10.jpeg',
-                '/src/assets/events/iotverse_11.jpeg',
-                '/src/assets/events/iotverse_16.jpeg'
+                '/events/iotverse_1.png',
+                '/events/iotverse_2.jpeg',
+                '/events/iotverse_3.png',
+                '/events/iotverse_4.jpeg',
+                '/events/iotverse_5.jpeg',
+                '/events/iotverse_6.jpeg',
+                '/events/iotverse_7.jpeg',
+                '/events/iotverse_8.jpeg',
+                '/events/iotverse_10.jpeg',
+                '/events/iotverse_11.jpeg',
+                '/events/iotverse_16.jpeg'
             ]
         },
         {
@@ -54,7 +54,7 @@ const Events = () => {
             date: "2nd - 3rd Dec 2022",
             time: "2 Days Event",
             location: "Block 4 & 5, GCET",
-            image: "/src/assets/events/technophilia_1.jpeg",
+            image: "/events/technophilia_1.jpeg",
             category: "Workshop & Hackathon",
             desc: "A hands-on workshop and hackathon for 2nd and 3rd-year students. Featured sessions on IoT basics, Arduino programming, Tinkercad simulation, and a project building competition. Guest lecture by Mr. Seshu Kumar (Wipro).",
             status: "Completed",

@@ -22,7 +22,7 @@ const Navbar = () => {
                     <Link to="/" className="flex items-center gap-4 group">
                         <div className="w-10 h-10 border border-white/20 rounded-lg overflow-hidden relative">
                             <div className="absolute inset-0 bg-neon-cyan/20 group-hover:bg-neon-cyan/0 transition-colors duration-300"></div>
-                            <img src="/src/assets/logo.jpg" alt="Logo" className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-300" />
+                            <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-300" />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-2xl font-bold tracking-tight text-white group-hover:text-neon-cyan transition-colors duration-300 font-sans">IOT CLUB</span>
