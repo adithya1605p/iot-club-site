@@ -6,6 +6,7 @@ import Events from './pages/Events';
 import Team from './pages/Team';
 import Contact from './pages/Contact';
 import Register from './pages/Register';
+import AdminDashboard from './pages/AdminDashboard';
 import KonamiCode from './components/KonamiCode';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/team" element={<Team />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </div>
     </Router>

@@ -118,10 +118,9 @@ const Register = () => {
                             >
                                 <option value="" disabled>Select Department</option>
                                 <option value="CSE">CSE</option>
+                                <option value="CS">CS (Cyber Secretary)</option>
                                 <option value="ECE">ECE</option>
                                 <option value="EEE">EEE</option>
-                                <option value="IT">IT</option>
-                                <option value="IOT">IoT</option>
                                 <option value="AIML">AI&ML</option>
                                 <option value="DS">Data Science</option>
                             </select>
