@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # IoT Club Website
 
 A futuristic, high-performance website for the IoT Club, built with **React**, **Vite**, and **Tailwind CSS**.
@@ -66,3 +67,6 @@ Global styles and animations are in `src/index.css`.
 - **404 Page**: Custom "Page Not Found" with navigation back to home.
 - **Form Validation**: Contact form handles empty states and simulates submission.
 - **Empty States**: Projects page handles empty filter results gracefully.
+=======
+# iot-club-site
+>>>>>>> fc7bbeeae97f3a49dfce31bb0cb60d1a1c98104c

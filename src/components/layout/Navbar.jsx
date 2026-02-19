@@ -1,89 +1,85 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Cpu } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
 
     const navLinks = [
-        { name: 'Home', path: '/' },
-        { name: 'About', path: '/about' },
-        { name: 'Events', path: '/events' },
-        { name: 'Team', path: '/team' },
-        { name: 'Contact', path: '/contact' },
+        { name: 'HOME', path: '/' },
+        { name: 'ABOUT', path: '/about' },
+        { name: 'EVENTS', path: '/events' },
+        { name: 'TEAM', path: '/team' },
+        { name: 'JOIN', path: '/register' },
     ];
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg border-b border-white/10 bg-background/80">
-            <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                {/* Logo */}
-                <Link to="/" className="flex items-center gap-2 group">
-                    <div className="relative">
-                        <div className="relative w-10 h-10 overflow-hidden rounded-full border border-neon-cyan/50 group-hover:border-neon-purple/50 transition-colors duration-300">
-                            <img src="/src/assets/logo.jpg" alt="IoT Club Logo" className="w-full h-full object-cover" />
+        <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="flex items-center justify-between h-20">
+                    {/* Logo / Brand */}
+                    <Link to="/" className="flex items-center gap-4 group">
+                        <div className="w-10 h-10 border border-white/20 rounded-lg overflow-hidden relative">
+                            <div className="absolute inset-0 bg-neon-cyan/20 group-hover:bg-neon-cyan/0 transition-colors duration-300"></div>
+                            <img src="/src/assets/logo.jpg" alt="Logo" className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-300" />
                         </div>
-                    </div>
-                    <span className="text-xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-neon-cyan to-neon-purple">
-                        IoT Club
-                    </span>
-                </Link>
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-bold tracking-tight text-white group-hover:text-neon-cyan transition-colors duration-300 font-sans">IOT CLUB</span>
+                            <span className="text-[10px] tracking-[0.2em] text-gray-500 font-mono">GCET STUDENT CHAPTER</span>
+                        </div>
+                    </Link>
 
-                {/* Desktop Nav */}
-                <div className="hidden md:flex items-center gap-8">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.path}
-                            to={link.path}
-                            className={`relative text-sm font-medium transition-colors duration-300 hover:text-neon-cyan ${location.pathname === link.path ? 'text-neon-cyan' : 'text-gray-400'
-                                }`}
-                        >
-                            {link.name}
-                            {location.pathname === link.path && (
-                                <motion.div
-                                    layoutId="underline"
-                                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-neon-cyan shadow-[0_0_10px_#00f3ff]"
-                                />
-                            )}
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden text-gray-400 hover:text-white"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    {isOpen ? <X /> : <Menu />}
-                </button>
-            </div>
-
-            {/* Mobile Nav */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-background/95 border-b border-white/10 overflow-hidden"
-                    >
-                        <div className="flex flex-col p-4 gap-4">
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex">
+                        <div className="ml-10 flex items-baseline space-x-1">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.path}
                                     to={link.path}
-                                    className={`text-lg font-medium transition-colors ${location.pathname === link.path ? 'text-neon-cyan' : 'text-gray-400'
+                                    className={`relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${location.pathname === link.path
+                                        ? 'text-black bg-neon-cyan shadow-[0_0_15px_rgba(0,255,255,0.4)]'
+                                        : 'text-gray-400 hover:text-white hover:bg-white/5'
                                         }`}
-                                    onClick={() => setIsOpen(false)}
                                 >
                                     {link.name}
                                 </Link>
                             ))}
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden">
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="text-white p-2 hover:bg-white/10 rounded-full transition-colors"
+                        >
+                            {isOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Menu */}
+            {isOpen && (
+                <div className="md:hidden bg-black/90 backdrop-blur-xl border-b border-white/10 absolute top-20 left-0 w-full z-40">
+                    <div className="px-6 py-8 space-y-4">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.path}
+                                to={link.path}
+                                onClick={() => setIsOpen(false)}
+                                className={`block px-5 py-4 rounded-xl text-lg font-bold tracking-widest transition-all border border-transparent ${location.pathname === link.path
+                                    ? 'text-black bg-neon-cyan border-neon-cyan shadow-[0_0_20px_rgba(0,255,255,0.3)]'
+                                    : 'text-gray-400 border-white/5 hover:border-white/20 hover:text-white hover:bg-white/5'
+                                    }`}
+                            >
+                                {link.name}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
         </nav>
     );
 };

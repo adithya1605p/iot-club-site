@@ -9,26 +9,29 @@ export default {
     extend: {
       colors: {
         neon: {
-          cyan: '#00f3ff',
-          purple: '#bd00ff',
-          blue: '#0066ff',
+          cyan: '#00ff00',   // Retro Green (Terminal)
+          purple: '#ff00ff', // Hot Pink (Magenta)
+          blue: '#00ffff',   // Cyan
         },
-        background: '#0a0a0a',
-        surface: '#121212',
-        glass: 'rgba(255, 255, 255, 0.05)',
+        accent: {
+          gold: '#ffff00', // Pure Yellow
+        },
+        background: '#000000', // Pure Black
+        surface: '#111111',    // Very Dark Grey
+        glass: 'rgba(0, 255, 0, 0.05)', // Green tint
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['Fira Code', 'monospace'],
+        sans: ['"Rajdhani"', 'sans-serif'],
+        mono: ['"Space Grotesk"', 'sans-serif'],
       },
       animation: {
-        'glow': 'glow 2s ease-in-out infinite alternate',
-        'float': 'float 3s ease-in-out infinite',
+        'glow': 'glow 3s ease-in-out infinite alternate',
+        'float': 'float 6s ease-in-out infinite',
       },
       keyframes: {
         glow: {
-          '0%': { boxShadow: '0 0 5px #00f3ff' },
-          '100%': { boxShadow: '0 0 20px #00f3ff, 0 0 10px #bd00ff' },
+          '0%': { boxShadow: '0 0 5px rgba(6, 182, 212, 0.5)' },
+          '100%': { boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), 0 0 10px rgba(37, 99, 235, 0.3)' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0)' },

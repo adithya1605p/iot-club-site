@@ -1,0 +1,188 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { supabase } from '../lib/supabaseClient';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import { User, Mail, Smartphone, Hash, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+
+const Register = () => {
+    const [formData, setFormData] = useState({
+        fullName: '',
+        rollNumber: '',
+        email: '',
+        phone: '',
+        department: '',
+        year: ''
+    });
+    const [loading, setLoading] = useState(false);
+    const [status, setStatus] = useState({ type: '', message: '' });
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setStatus({ type: '', message: '' });
+
+        try {
+            const { error } = await supabase
+                .from('registrations')
+                .insert([
+                    {
+                        full_name: formData.fullName,
+                        roll_number: formData.rollNumber,
+                        email: formData.email,
+                        phone: formData.phone,
+                        department: formData.department,
+                        year: formData.year
+                    }
+                ]);
+
+            if (error) throw error;
+
+            setStatus({ type: 'success', message: 'Registration Successful! Welcome to the Network.' });
+            setFormData({ fullName: '', rollNumber: '', email: '', phone: '', department: '', year: '' });
+        } catch (error) {
+            setStatus({ type: 'error', message: error.message || 'Transmission Failed. Try again.' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen pt-24 pb-12 px-4 flex items-center justify-center relative overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+                <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-neon-cyan/10 rounded-full blur-[100px]"></div>
+                <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-neon-purple/10 rounded-full blur-[100px]"></div>
+            </div>
+
+            <Card className="w-full max-w-2xl p-8 md:p-12 relative border-neon-cyan/30 bg-black/60 backdrop-blur-xl">
+                <div className="text-center mb-10">
+                    <motion.h2
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight"
+                    >
+                        INITIATE <span className="text-neon-cyan">PROTOCOL</span>
+                    </motion.h2>
+                    <p className="text-gray-400 font-mono">Enter your credentials to join the network.</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <InputGroup
+                            icon={<User size={18} />}
+                            name="fullName"
+                            placeholder="Full Name"
+                            value={formData.fullName}
+                            onChange={handleChange}
+                            required
+                        />
+                        <InputGroup
+                            icon={<Hash size={18} />}
+                            name="rollNumber"
+                            placeholder="Roll Number"
+                            value={formData.rollNumber}
+                            onChange={handleChange}
+                            required
+                        />
+                        <InputGroup
+                            icon={<Mail size={18} />}
+                            name="email"
+                            type="email"
+                            placeholder="College Email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                        />
+                        <InputGroup
+                            icon={<Smartphone size={18} />}
+                            name="phone"
+                            type="tel"
+                            placeholder="Phone Number"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            required
+                        />
+                        <div className="space-y-1">
+                            <label className="text-xs text-neon-cyan font-mono uppercase tracking-wider ml-1">Department</label>
+                            <select
+                                name="department"
+                                value={formData.department}
+                                onChange={handleChange}
+                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-neon-cyan focus:outline-none transition-colors appearance-none"
+                                required
+                            >
+                                <option value="" disabled>Select Department</option>
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="EEE">EEE</option>
+                                <option value="IT">IT</option>
+                                <option value="IOT">IoT</option>
+                                <option value="AIML">AI&ML</option>
+                                <option value="DS">Data Science</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs text-neon-cyan font-mono uppercase tracking-wider ml-1">Year</label>
+                            <select
+                                name="year"
+                                value={formData.year}
+                                onChange={handleChange}
+                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-neon-cyan focus:outline-none transition-colors appearance-none"
+                                required
+                            >
+                                <option value="" disabled>Select Year</option>
+                                <option value="1">1st Year</option>
+                                <option value="2">2nd Year</option>
+                                <option value="3">3rd Year</option>
+                                <option value="4">4th Year</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    {status.message && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className={`p-4 rounded-lg flex items-center gap-3 ${status.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}
+                        >
+                            {status.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+                            <span className="font-mono text-sm">{status.message}</span>
+                        </motion.div>
+                    )}
+
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        className="w-full py-4 text-lg font-bold tracking-widest uppercase"
+                        disabled={loading}
+                    >
+                        {loading ? <span className="flex items-center gap-2"><Loader2 className="animate-spin" /> Transmitting...</span> : 'Confirm Registration'}
+                    </Button>
+                </form>
+            </Card>
+        </div>
+    );
+};
+
+const InputGroup = ({ icon, label, ...props }) => (
+    <div className="space-y-1">
+        {props.placeholder && <label className="text-xs text-neon-cyan font-mono uppercase tracking-wider ml-1">{props.placeholder}</label>}
+        <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-neon-cyan transition-colors">
+                {icon}
+            </div>
+            <input
+                {...props}
+                className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white focus:border-neon-cyan focus:outline-none transition-colors placeholder-transparent"
+            />
+        </div>
+    </div>
+);
+
+export default Register;

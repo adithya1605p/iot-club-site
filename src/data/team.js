@@ -1,10 +1,17 @@
+import deepak from '../assets/team/deepak.jpeg';
+import isha from '../assets/team/isha.jpeg';
+import abhinav from '../assets/team/abhinav.jpeg';
+import shreeya from '../assets/team/shreeya.jpeg';
+import padma from '../assets/team/padma_priya.jpeg';
+import sreekar from '../assets/team/sreekar.jpeg';
+
 export const team = [
     {
         id: 1,
         name: "A. Lakshmi Deepak",
         role: "President",
         bio: "Leading the club with a vision for innovation.",
-        image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400",
+        image: deepak,
         socials: { linkedin: "#" }
     },
     {
@@ -12,7 +19,7 @@ export const team = [
         name: "Isha Parveen",
         role: "Vice President",
         bio: "Ensuring smooth operations and strategic growth.",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400", // Female placeholder
+        image: isha,
         socials: { linkedin: "#" }
     },
     {
@@ -20,7 +27,7 @@ export const team = [
         name: "N. Abhinav",
         role: "Secretary",
         bio: "Managing documentation and club communications.",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400", // Male placeholder
+        image: abhinav,
         socials: { linkedin: "#" }
     },
     {
@@ -28,7 +35,7 @@ export const team = [
         name: "K. Shreeya",
         role: "Treasury",
         bio: "Handling finances and budget allocation.",
-        image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400", // Female placeholder
+        image: shreeya,
         socials: { linkedin: "#" }
     },
     {
@@ -36,7 +43,7 @@ export const team = [
         name: "Padma Priya",
         role: "PR",
         bio: "Managing public relations and outreach.",
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400", // New Female placeholder
+        image: padma,
         socials: { linkedin: "#" }
     },
     {
@@ -44,7 +51,7 @@ export const team = [
         name: "Sreekar",
         role: "Technical Lead",
         bio: "Guiding the technical projects and workshops.",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400", // New Male placeholder
+        image: sreekar,
         socials: { linkedin: "#" }
     }
 ];

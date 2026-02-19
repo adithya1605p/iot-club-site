@@ -1,4 +1,4 @@
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Github, Twitter, Linkedin, Mail, Instagram } from 'lucide-react';
 
 const Footer = () => {
     return (
@@ -14,10 +14,10 @@ const Footer = () => {
                     </div>
 
                     <div className="flex gap-6">
-                        <a href="#" className="text-gray-400 hover:text-neon-cyan transition-colors"><Github className="w-5 h-5" /></a>
-                        <a href="#" className="text-gray-400 hover:text-neon-cyan transition-colors"><Twitter className="w-5 h-5" /></a>
-                        <a href="#" className="text-gray-400 hover:text-neon-cyan transition-colors"><Linkedin className="w-5 h-5" /></a>
+                        <a href="https://www.instagram.com/iotclub.gcet?igsh=dm1neXcxZTEwMDNk" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-neon-cyan transition-colors"><Instagram className="w-5 h-5" /></a>
                         <a href="#" className="text-gray-400 hover:text-neon-cyan transition-colors"><Mail className="w-5 h-5" /></a>
+                        <a href="#" className="text-gray-400 hover:text-neon-cyan transition-colors"><Github className="w-5 h-5" /></a>
+                        <a href="#" className="text-gray-400 hover:text-neon-cyan transition-colors"><Linkedin className="w-5 h-5" /></a>
                     </div>
 
                     <div className="text-gray-500 text-xs">
