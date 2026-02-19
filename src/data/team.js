@@ -12,7 +12,7 @@ export const team = [
         role: "President",
         bio: "Leading the club with a vision for innovation.",
         image: deepak,
-        socials: { linkedin: "#" }
+        socials: { linkedin: "https://www.linkedin.com/in/deepak1010" }
     },
     {
         id: 2,
@@ -20,7 +20,7 @@ export const team = [
         role: "Vice President",
         bio: "Ensuring smooth operations and strategic growth.",
         image: isha,
-        socials: { linkedin: "#" }
+        socials: { linkedin: "https://www.linkedin.com/in/isha-parveen-8b82b3307" }
     },
     {
         id: 3,
@@ -28,30 +28,30 @@ export const team = [
         role: "Secretary",
         bio: "Managing documentation and club communications.",
         image: abhinav,
-        socials: { linkedin: "#" }
+        socials: { linkedin: "https://www.linkedin.com/in/abhinav-nadipelly-504971322" }
     },
     {
         id: 4,
         name: "K. Shreeya",
-        role: "Treasury",
-        bio: "Handling finances and budget allocation.",
+        role: "HR",
+        bio: "Handling recruitment and human resources.",
         image: shreeya,
-        socials: { linkedin: "#" }
+        socials: { linkedin: "https://www.linkedin.com/in/shreeya-kommajosyula-93472828b" }
     },
     {
         id: 5,
-        name: "Padma Priya",
-        role: "PR",
-        bio: "Managing public relations and outreach.",
+        name: "K.Sai Padma Priya",
+        role: "Treasurer",
+        bio: "Managing club finances and budget allocation.",
         image: padma,
         socials: { linkedin: "#" }
     },
     {
         id: 6,
-        name: "Sreekar",
+        name: "V.Venkata Srikar",
         role: "Technical Lead",
         bio: "Guiding the technical projects and workshops.",
         image: sreekar,
-        socials: { linkedin: "#" }
+        socials: { linkedin: "https://www.linkedin.com/in/venkata-srikar-vajjha-312949337" }
     }
 ];

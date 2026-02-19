@@ -71,7 +71,7 @@ const Home = () => {
                         Whether you're a beginner or a pro, there's a place for you in our team.
                         Let's build something amazing together.
                     </p>
-                    <Link to="/contact">
+                    <Link to="/register">
                         <Button variant="secondary" className="px-8 py-4 text-lg rounded-full border border-white/20 hover:bg-neon-cyan hover:text-black hover:border-neon-cyan transition-all">
                             Become a Member
                         </Button>

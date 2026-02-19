@@ -152,7 +152,19 @@ const Register = () => {
                             className={`p-4 rounded-lg flex items-center gap-3 ${status.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}
                         >
                             {status.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                            <span className="font-mono text-sm">{status.message}</span>
+                            <div className="flex flex-col">
+                                <span className="font-mono text-sm">{status.message}</span>
+                                {status.type === 'success' && (
+                                    <a
+                                        href="https://chat.whatsapp.com/BreciBrPAMDEmBwhjMmrR1?mode=gi_t"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-2 text-xs bg-green-500 text-black px-3 py-1 rounded font-bold uppercase tracking-wider hover:bg-green-400 inline-block w-fit"
+                                    >
+                                        Join WhatsApp Group →
+                                    </a>
+                                )}
+                            </div>
                         </motion.div>
                     )}
 
