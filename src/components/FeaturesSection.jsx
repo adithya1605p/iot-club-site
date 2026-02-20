@@ -13,49 +13,49 @@ import {
 export default function FeaturesSection() {
     const features = [
         {
-            title: "Hardware Lab Access",
+            title: "Hands-on Workshops",
             description:
-                "Get hands-on experience with Arduino, Raspberry Pi, ESP32, and advanced sensors in our dedicated lab.",
-            icon: <IconCpu />,
-        },
-        {
-            title: "Coding Workshops",
-            description:
-                "Weekly sessions on Python, C++, and Embedded Systems programming to level up your skills.",
+                "Learn IoT basics, Arduino programming, and Tinkercad simulation through practical sessions.",
             icon: <IconTerminal2 />,
         },
         {
-            title: "Project Support",
+            title: "Project Exhibitions",
             description:
-                "Full mentorship and funding support for innovative IoT projects. From idea to prototype.",
-            icon: <IconTools />,
-        },
-        {
-            title: "Vibrant Community",
-            description: "Join a network of 500+ tech enthusiasts, seniors, and alumni who share your passion.",
-            icon: <IconUsers />,
-        },
-        {
-            title: "Campus Integration",
-            description: "Build smart solutions for GCET campus. We turn our college into a smart city.",
-            icon: <IconSchool />,
-        },
-        {
-            title: "Hackathon Winning Teams",
-            description:
-                "We form and train teams that consistently win national Smart India Hackathons.",
-            icon: <IconTrophy />,
-        },
-        {
-            title: "Innovation Hub",
-            description:
-                "A space where crazy ideas are encouraged. If you can dream it, we help you build it.",
+                "Showcase your innovative ideas in domains like Healthcare, Smart Agriculture, and Edutech.",
             icon: <IconBulb />,
         },
         {
-            title: "Career Launchpad",
-            description: "Our members get exclusive internship opportunities and portfolio building guidance.",
+            title: "Ideathons & Hackathons",
+            description:
+                "Compete in flagship events like BID2BUILD to solve real-world problems and win prizes.",
+            icon: <IconTrophy />,
+        },
+        {
+            title: "Expert Guest Lectures",
+            description: "Gain insights from industry professionals and experienced developers to guide your tech journey.",
+            icon: <IconSchool />,
+        },
+        {
+            title: "Idea Pitching",
+            description: "Develop your presentation skills by pitching your smart solutions to peers and mentors.",
             icon: <IconRocket />,
+        },
+        {
+            title: "Hardware Basics",
+            description:
+                "Get started with microcontrollers and sensors to build your very first working prototypes.",
+            icon: <IconCpu />,
+        },
+        {
+            title: "Collaborative Learning",
+            description:
+                "Join a passionate group of students dedicated to exploring the Internet of Things together.",
+            icon: <IconUsers />,
+        },
+        {
+            title: "Tech Competitions",
+            description: "Test your knowledge and skills in technical quizzes and project building challenges.",
+            icon: <IconTools />,
         },
     ];
 
