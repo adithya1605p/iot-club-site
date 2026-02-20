@@ -46,14 +46,14 @@ const Home = () => {
 
                 {/* Call to Actions */}
                 <div className="flex flex-col md:flex-row gap-6 mt-16 z-20">
-                    <Link to="/contact">
+                    <Link to="/register">
                         <Button variant="primary" className="h-14 px-10 text-lg rounded-full shadow-[0_0_40px_-10px_rgba(0,255,255,0.3)] hover:shadow-[0_0_60px_-15px_rgba(0,255,255,0.5)] transition-shadow">
                             Join the Network
                         </Button>
                     </Link>
-                    <Link to="/about">
+                    <Link to="/events">
                         <Button variant="secondary" className="h-14 px-10 text-lg rounded-full border border-white/10 hover:bg-white/5 bg-transparent">
-                            Explore Projects
+                            Explore Events
                         </Button>
                     </Link>
                 </div>

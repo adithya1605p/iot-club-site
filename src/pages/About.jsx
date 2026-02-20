@@ -6,6 +6,22 @@ const About = () => {
     return (
         <div className="container mx-auto pt-24 min-h-screen px-4">
             <div className="text-center mb-16">
+
+                {/* Logos Section */}
+                <div className="flex justify-center items-center gap-8 mb-8">
+                    <img
+                        src="/clg_logo.jpeg"
+                        alt="Geethanjali College Logo"
+                        className="h-24 md:h-32 object-contain bg-white rounded-xl p-2"
+                    />
+                    <div className="w-1 h-16 bg-white/20 rounded-full"></div>
+                    <img
+                        src="/logo.jpg"
+                        alt="IoT Club Logo"
+                        className="h-24 md:h-32 object-contain rounded-xl"
+                    />
+                </div>
+
                 <motion.h1
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
