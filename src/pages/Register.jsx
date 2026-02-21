@@ -37,6 +37,11 @@ const Register = () => {
             setLoading(false);
             return;
         }
+        if (!cleanEmail.endsWith('@gcet.edu.in')) {
+            setStatus({ type: 'error', message: 'Please use your official college email (@gcet.edu.in).' });
+            setLoading(false);
+            return;
+        }
         if (cleanPhone.length !== 10) {
             setStatus({ type: 'error', message: 'Phone Number must be exactly 10 digits.' });
             setLoading(false);
