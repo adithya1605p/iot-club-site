@@ -115,7 +115,7 @@ const Register = () => {
                     >
                         INITIATE <span className="text-neon-cyan">PROTOCOL</span>
                     </motion.h2>
-                    <p className="text-gray-400 font-mono">Enter your credentials to join the network.</p>
+                    <p className="text-gray-400 font-mono">Enter your credentials to register for the IoT Club recruitments 2026.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -167,11 +167,13 @@ const Register = () => {
                             >
                                 <option value="" disabled>Select Department</option>
                                 <option value="CSE">CSE</option>
-                                <option value="CS">CS (Cyber Secretary)</option>
+                                <option value="CS">CS (Cyber Security)</option>
                                 <option value="ECE">ECE</option>
                                 <option value="EEE">EEE</option>
                                 <option value="AIML">AI&ML</option>
                                 <option value="DS">Data Science</option>
+                                <option value="CIVIL">Civil Engineering</option>
+                                <option value="MECH">Mechanical Engineering</option>
                             </select>
                         </div>
                         <div className="space-y-1">
