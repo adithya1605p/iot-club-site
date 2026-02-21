@@ -26,26 +26,73 @@ const Register = () => {
         setLoading(true);
         setStatus({ type: '', message: '' });
 
+        // Format and clean data
+        const cleanRollNumber = formData.rollNumber.trim().toUpperCase();
+        const cleanEmail = formData.email.trim().toLowerCase();
+        const cleanPhone = formData.phone.replace(/\D/g, ''); // Remove non-digits
+
+        // Basic Formatting Validation
+        if (cleanRollNumber.length !== 10) {
+            setStatus({ type: 'error', message: 'Roll Number must be exactly 10 characters.' });
+            setLoading(false);
+            return;
+        }
+        if (cleanPhone.length !== 10) {
+            setStatus({ type: 'error', message: 'Phone Number must be exactly 10 digits.' });
+            setLoading(false);
+            return;
+        }
+
         try {
-            const { error } = await supabase
+            // 1. Check for duplicate Roll Number
+            const { data: existingRoll, error: rollError } = await supabase
+                .from('registrations')
+                .select('id')
+                .eq('roll_number', cleanRollNumber)
+                .single();
+
+            if (rollError && rollError.code !== 'PGRST116') throw rollError; // PGRST116 is "No rows found"
+            if (existingRoll) {
+                setStatus({ type: 'error', message: 'This Roll Number is already registered.' });
+                setLoading(false);
+                return;
+            }
+
+            // 2. Check for duplicate Email
+            const { data: existingEmail, error: emailError } = await supabase
+                .from('registrations')
+                .select('id')
+                .eq('email', cleanEmail)
+                .single();
+
+            if (emailError && emailError.code !== 'PGRST116') throw emailError;
+            if (existingEmail) {
+                setStatus({ type: 'error', message: 'This Email is already registered.' });
+                setLoading(false);
+                return;
+            }
+
+            // 3. Insert NEW record
+            const { error: insertError } = await supabase
                 .from('registrations')
                 .insert([
                     {
-                        full_name: formData.fullName,
-                        roll_number: formData.rollNumber,
-                        email: formData.email,
-                        phone: formData.phone,
+                        full_name: formData.fullName.trim(),
+                        roll_number: cleanRollNumber,
+                        email: cleanEmail,
+                        phone: cleanPhone,
                         department: formData.department,
                         year: formData.year
                     }
                 ]);
 
-            if (error) throw error;
+            if (insertError) throw insertError;
 
             setStatus({ type: 'success', message: 'Registration Successful! Welcome to the Network.' });
             setFormData({ fullName: '', rollNumber: '', email: '', phone: '', department: '', year: '' });
         } catch (error) {
-            setStatus({ type: 'error', message: error.message || 'Transmission Failed. Try again.' });
+            console.error(error);
+            setStatus({ type: 'error', message: error.message || 'Transmission Failed. Check connection and try again.' });
         } finally {
             setLoading(false);
         }
@@ -87,6 +134,7 @@ const Register = () => {
                             placeholder="Roll Number"
                             value={formData.rollNumber}
                             onChange={handleChange}
+                            maxLength="10"
                             required
                         />
                         <InputGroup
@@ -105,6 +153,7 @@ const Register = () => {
                             placeholder="Phone Number"
                             value={formData.phone}
                             onChange={handleChange}
+                            maxLength="10"
                             required
                         />
                         <div className="space-y-1">

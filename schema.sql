@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS registrations (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at timestamptz DEFAULT now(),
   full_name text NOT NULL,
-  roll_number text NOT NULL,
-  email text NOT NULL,
+  roll_number text NOT NULL UNIQUE,
+  email text NOT NULL UNIQUE,
   phone text NOT NULL,
   department text NOT NULL,
   year text NOT NULL
