@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Cpu, Zap, Globe } from 'lucide-react';
+import { ArrowRight, Cpu, Zap, Globe, Instagram } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { TextHoverEffect } from '../components/ui/text-hover-effect';
@@ -27,10 +27,10 @@ const Home = () => {
                 {/* Main Typography */}
                 <div className="relative text-center">
                     <motion.h1
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="text-6xl md:text-9xl font-bold text-white mb-2 tracking-tighter"
+                        initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        className="text-6xl md:text-9xl font-bold text-white mb-2 tracking-tighter text-glow-breath"
                     >
                         IOT CLUB
                     </motion.h1>
@@ -76,6 +76,14 @@ const Home = () => {
                             Become a Member
                         </Button>
                     </Link>
+
+                    <div className="mt-8 flex justify-center items-center gap-2 text-gray-400">
+                        <span>Follow our daily updates on</span>
+                        <a href="https://www.instagram.com/iotclub.gcet?igsh=dm1neXcxZTEwMDNk" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-neon-cyan hover:text-white transition-colors group bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-neon-cyan">
+                            <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <span className="font-mono text-sm">@iotclub.gcet</span>
+                        </a>
+                    </div>
                 </div>
             </section>
         </div>
