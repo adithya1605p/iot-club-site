@@ -53,7 +53,7 @@ const Register = () => {
 
             if (rollError && rollError.code !== 'PGRST116') throw rollError; // PGRST116 is "No rows found"
             if (existingRoll) {
-                setStatus({ type: 'error', message: 'This Roll Number is already registered.' });
+                setStatus({ type: 'success', message: 'You are already registered! Please make sure you have joined the WhatsApp group.' });
                 setLoading(false);
                 return;
             }
@@ -67,7 +67,7 @@ const Register = () => {
 
             if (emailError && emailError.code !== 'PGRST116') throw emailError;
             if (existingEmail) {
-                setStatus({ type: 'error', message: 'This Email is already registered.' });
+                setStatus({ type: 'success', message: 'You are already registered! Please make sure you have joined the WhatsApp group.' });
                 setLoading(false);
                 return;
             }
