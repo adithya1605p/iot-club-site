@@ -29,8 +29,8 @@ const About = () => {
                 >
                     IoT Club GCET
                 </motion.h1>
-                <p className="text-gray-400 max-w-3xl mx-auto text-lg">
-                    The official IoT Club of <strong>Geethanjali College of Engineering and Technology</strong> (UGC Autonomous).
+                <p className="text-gray-400 max-w-3xl mx-auto text-lg leading-relaxed">
+                    The official IoT Club under the <strong>Department of AI & ML</strong> at <strong>Geethanjali College of Engineering and Technology</strong> (UGC Autonomous).
                     <br />
                     Igniting minds to innovate in the world of Internet of Things.
                 </p>
@@ -74,6 +74,24 @@ const About = () => {
                     </Card>
                 </div>
             </div>
+
+            {/* Special Thanks Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="mb-16"
+            >
+                <Card className="text-center p-8 border-neon-cyan/20 bg-neon-cyan/5">
+                    <div className="w-16 h-16 bg-neon-cyan/10 rounded-full flex items-center justify-center mx-auto mb-4 text-neon-cyan shadow-[0_0_15px_rgba(0,255,255,0.2)]">
+                        <Award size={32} />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-3">Special Thanks</h3>
+                    <p className="text-gray-300 text-lg max-w-3xl mx-auto leading-relaxed">
+                        We extend our deepest gratitude to our Head of the Department, CSE (AI & ML), <strong className="text-white font-bold tracking-wide">Dr. A. Nageshwar Rao</strong>, for his continuous support, encouragement, and visionary guidance in establishing and nurturing the IoT Club.
+                    </p>
+                </Card>
+            </motion.div>
 
             <div className="bg-surface/30 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
                 <h2 className="text-3xl font-bold text-white mb-8 text-center flex items-center justify-center gap-3">
