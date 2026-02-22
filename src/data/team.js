@@ -44,7 +44,7 @@ export const team = [
         role: "Treasurer",
         bio: "Managing club finances and budget allocation.",
         image: padma,
-        socials: { linkedin: "#" }
+        socials: { linkedin: "https://www.linkedin.com/in/padmapriya-kopparthi-b22657353?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" }
     },
     {
         id: 6,
