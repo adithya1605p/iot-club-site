@@ -58,7 +58,7 @@ const Register = () => {
 
             if (rollError && rollError.code !== 'PGRST116') throw rollError; // PGRST116 is "No rows found"
             if (existingRoll) {
-                setStatus({ type: 'success', message: 'You are already registered! Please make sure you have joined the WhatsApp group.' });
+                setStatus({ type: 'success', message: 'You are already registered! Please make sure you have joined the WhatsApp group and log in using your Roll Number.' });
                 setLoading(false);
                 return;
             }
@@ -72,12 +72,12 @@ const Register = () => {
 
             if (emailError && emailError.code !== 'PGRST116') throw emailError;
             if (existingEmail) {
-                setStatus({ type: 'success', message: 'You are already registered! Please make sure you have joined the WhatsApp group.' });
+                setStatus({ type: 'success', message: 'You are already registered! Please make sure you have joined the WhatsApp group and log in using your Roll Number.' });
                 setLoading(false);
                 return;
             }
 
-            // 3. Insert NEW record
+            // 3. Insert NEW record into registrations
             const { error: insertError } = await supabase
                 .from('registrations')
                 .insert([
@@ -93,7 +93,26 @@ const Register = () => {
 
             if (insertError) throw insertError;
 
-            setStatus({ type: 'success', message: 'Registration Successful! Welcome to the Network.' });
+            // 4. Auto-create Auth User (Password is their Roll Number)
+            const { data: authData, error: signUpError } = await supabase.auth.signUp({
+                email: cleanEmail,
+                password: cleanRollNumber,
+            });
+
+            // If auth creation succeeds, insert profile as Tinkerer
+            if (!signUpError && authData?.user) {
+                await supabase.from('profiles').insert([
+                    {
+                        id: authData.user.id,
+                        full_name: formData.fullName.trim(),
+                        roll_number: cleanRollNumber,
+                        department: formData.department,
+                        role: 'tinkerer' // Default role
+                    }
+                ]);
+            }
+
+            setStatus({ type: 'success', message: 'Registration Successful! Your Dashboard is ready.' });
             setFormData({ fullName: '', rollNumber: '', email: '', phone: '', department: '', year: '' });
         } catch (error) {
             console.error(error);
@@ -204,21 +223,37 @@ const Register = () => {
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className={`p-4 rounded-lg flex items-center gap-3 ${status.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}
+                            className={`p-6 rounded-lg ${status.type === 'success' ? 'bg-green-500/10 border border-green-500/30' : 'bg-red-500/10 border border-red-500/30'}`}
                         >
-                            {status.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                            <div className="flex flex-col">
-                                <span className="font-mono text-sm">{status.message}</span>
-                                {status.type === 'success' && (
-                                    <a
-                                        href="https://chat.whatsapp.com/BreciBrPAMDEmBwhjMmrR1?mode=gi_t"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="mt-2 text-xs bg-green-500 text-black px-3 py-1 rounded font-bold uppercase tracking-wider hover:bg-green-400 inline-block w-fit"
-                                    >
-                                        Join WhatsApp Group →
-                                    </a>
-                                )}
+                            <div className={`flex items-start gap-3 ${status.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                                {status.type === 'success' ? <CheckCircle size={24} className="mt-1 flex-shrink-0" /> : <AlertCircle size={24} className="mt-1 flex-shrink-0" />}
+                                <div className="flex flex-col flex-1">
+                                    <h3 className="font-bold text-lg mb-2">{status.message}</h3>
+
+                                    {status.type === 'success' && (
+                                        <div className="space-y-4">
+                                            <div className="text-gray-300 text-sm space-y-2 font-mono bg-black/50 p-4 rounded border border-green-500/20">
+                                                <p className="text-green-400 font-bold mb-3 border-b border-green-500/30 pb-2">NEXT STEPS:</p>
+                                                <ol className="list-decimal list-inside space-y-2">
+                                                    <li>Click <strong className="text-white">LOGIN</strong> on the Navbar above.</li>
+                                                    <li>Email: <strong className="text-white">Your college email</strong></li>
+                                                    <li>Password: <strong className="text-neon-cyan">Your Roll Number</strong></li>
+                                                    <li>Check the <strong className="text-white">DASHBOARD</strong> regularly for updates on recruitment rounds.</li>
+                                                    <li>Meeting links and results will be posted directly to your dashboard.</li>
+                                                </ol>
+                                            </div>
+
+                                            <a
+                                                href="https://chat.whatsapp.com/BreciBrPAMDEmBwhjMmrR1?mode=gi_t"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full text-center bg-green-500 text-black px-4 py-3 rounded-lg font-bold uppercase tracking-wider hover:bg-green-400 inline-block transition-colors"
+                                            >
+                                                Join WhatsApp Group Now →
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </motion.div>
                     )}

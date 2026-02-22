@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const { user } = useAuth();
 
     const navLinks = [
         { name: 'HOME', path: '/' },
         { name: 'ABOUT', path: '/about' },
         { name: 'EVENTS', path: '/events' },
         { name: 'TEAM', path: '/team' },
-        { name: 'JOIN', path: '/register' },
     ];
+
+    const authLink = user ? { name: 'DASHBOARD', path: '/dashboard' } : { name: 'LOGIN', path: '/login' };
 
     return (
         <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
@@ -45,6 +48,15 @@ const Navbar = () => {
                                     {link.name}
                                 </Link>
                             ))}
+                            <Link
+                                to={authLink.path}
+                                className={`relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${location.pathname === authLink.path
+                                    ? 'text-black bg-neon-purple shadow-[0_0_15px_rgba(189,0,255,0.4)]'
+                                    : 'text-neon-purple hover:bg-neon-purple/10 border border-neon-purple/30'
+                                    }`}
+                            >
+                                {authLink.name}
+                            </Link>
                         </div>
                     </div>
 
@@ -77,6 +89,16 @@ const Navbar = () => {
                                 {link.name}
                             </Link>
                         ))}
+                        <Link
+                            to={authLink.path}
+                            onClick={() => setIsOpen(false)}
+                            className={`block px-5 py-4 rounded-xl text-lg font-bold tracking-widest transition-all border border-transparent ${location.pathname === authLink.path
+                                ? 'text-black bg-neon-purple border-neon-purple shadow-[0_0_20px_rgba(189,0,255,0.3)]'
+                                : 'text-neon-purple border-neon-purple/20 hover:border-neon-purple hover:bg-neon-purple/10'
+                                }`}
+                        >
+                            {authLink.name}
+                        </Link>
                     </div>
                 </div>
             )}
