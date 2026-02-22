@@ -204,22 +204,27 @@ const Register = () => {
                         <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
-                            className={`p-4 rounded-lg flex items-center gap-3 ${status.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}
+                            className={`p-6 rounded-xl flex flex-col items-center justify-center text-center gap-4 shadow-xl ${status.type === 'success' ? 'bg-green-500/10 text-green-400 border-2 border-green-500/50' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}
                         >
-                            {status.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
-                            <div className="flex flex-col">
-                                <span className="font-mono text-sm">{status.message}</span>
-                                {status.type === 'success' && (
+                            <div className="flex items-center gap-3">
+                                {status.type === 'success' ? <CheckCircle size={28} className="text-green-500 flex-shrink-0" /> : <AlertCircle size={24} className="flex-shrink-0" />}
+                                <span className="font-mono text-base md:text-lg font-bold">{status.message}</span>
+                            </div>
+
+                            {status.type === 'success' && (
+                                <div className="mt-4 w-full animate-bounce">
                                     <a
-                                        href="https://chat.whatsapp.com/BreciBrPAMDEmBwhjMmrR1?mode=gi_t"
+                                        href="https://chat.whatsapp.com/BreciBrPAMDEmBwhjMmrR1"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="mt-2 text-xs bg-green-500 text-black px-3 py-1 rounded font-bold uppercase tracking-wider hover:bg-green-400 inline-block w-fit"
+                                        className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black px-6 py-4 rounded-xl font-black text-lg md:text-xl uppercase tracking-widest shadow-[0_0_20px_rgba(34,197,94,0.6)] transition-all hover:scale-105"
                                     >
-                                        Join WhatsApp Group →
+                                        <Smartphone size={24} />
+                                        JOIN WHATSAPP GROUP NOW
                                     </a>
-                                )}
-                            </div>
+                                    <p className="text-gray-400 text-xs mt-3 font-mono">You MUST join the group to receive updates.</p>
+                                </div>
+                            )}
                         </motion.div>
                     )}
 
