@@ -111,15 +111,10 @@ const Register = () => {
             setFormData({ fullName: '', rollNumber: '', email: '', phone: '', department: '', year: '' });
         } catch (error) {
             console.error('Registration Error:', error);
-            let errorMsg = error.message || 'Transmission Failed. Check connection and try again.';
+            let errorMsg = 'Transmission Failed. Check your internet connection and try again.';
 
-            // Explicitly catch RLS security errors
-            if (errorMsg.includes('row-level security') || error.code === '42501' || error.code === 'PGRST116') {
-                errorMsg = 'SYSTEM LOCKED: Row Level Security is active. Admin MUST disable it in Supabase for registrations to work.';
-            }
-            // Explicitly catch Network/Timeout errors
-            else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('Timed Out') || errorMsg.includes('Network')) {
-                errorMsg = 'NETWORK ERROR: Your internet connection (Mobile Data / Wi-Fi) is blocking the database request. Try switching to a different network or turning on a VPN.';
+            if (error.message && error.message.includes('Timed Out')) {
+                errorMsg = 'Connection timed out. Please try again on a stable network.';
             }
 
             setStatus({ type: 'error', message: errorMsg });

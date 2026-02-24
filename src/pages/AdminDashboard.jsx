@@ -168,21 +168,6 @@ const AdminDashboard = () => {
                 </div>
             )}
 
-            {stats.total === 0 && !loading && !errorMsg && (
-                <div className="mb-8 p-6 bg-yellow-500/10 border-2 border-yellow-500/50 text-yellow-400 rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.2)]">
-                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
-                        ⚠️ DATABASE SECURITY LOCK ACTIVE?
-                    </h3>
-                    <p className="font-mono text-sm mb-3 text-yellow-200">
-                        If you expect to see users here but see <span className="font-bold text-white">0</span>, AND registrations are failing on the website, Supabase Row-Level Security (RLS) is currently blocking access.
-                    </p>
-                    <p className="font-mono text-sm mb-2">To fix this instantly, go to your <strong className="text-white">Supabase SQL Editor</strong> and run EXACTLY this command:</p>
-                    <code className="block bg-black/50 p-4 rounded text-neon-cyan font-bold font-mono border border-neon-cyan/30 select-all mt-2">
-                        ALTER TABLE public.registrations DISABLE ROW LEVEL SECURITY;
-                    </code>
-                </div>
-            )}
-
             {/* Analytics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                 <Card className="p-6 border-neon-cyan/30 bg-neon-cyan/5">
@@ -225,8 +210,8 @@ const AdminDashboard = () => {
             </div>
 
             {/* Data Table */}
-            <Card className="overflow-hidden border-white/10">
-                <div className="p-4 border-b border-white/10 flex items-center bg-white/5">
+            <Card className="border-white/10 w-full mb-8">
+                <div className="p-4 border-b border-white/10 flex flex-col md:flex-row gap-4 items-center bg-white/5">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                         <input
