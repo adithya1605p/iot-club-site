@@ -21,6 +21,14 @@ const Register = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const fetchWithTimeout = (promise, ms = 15000) => {
+        let timeoutId;
+        const timeoutPromise = new Promise((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Connection Timed Out.')), ms);
+        });
+        return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -50,11 +58,13 @@ const Register = () => {
 
         try {
             // 1. Check for duplicate Roll Number
-            const { data: existingRoll, error: rollError } = await supabase
-                .from('registrations')
-                .select('id')
-                .eq('roll_number', cleanRollNumber)
-                .single();
+            const { data: existingRoll, error: rollError } = await fetchWithTimeout(
+                supabase
+                    .from('registrations')
+                    .select('id')
+                    .eq('roll_number', cleanRollNumber)
+                    .single()
+            );
 
             if (rollError && rollError.code !== 'PGRST116') throw rollError; // PGRST116 is "No rows found"
             if (existingRoll) {
@@ -64,11 +74,13 @@ const Register = () => {
             }
 
             // 2. Check for duplicate Email
-            const { data: existingEmail, error: emailError } = await supabase
-                .from('registrations')
-                .select('id')
-                .eq('email', cleanEmail)
-                .single();
+            const { data: existingEmail, error: emailError } = await fetchWithTimeout(
+                supabase
+                    .from('registrations')
+                    .select('id')
+                    .eq('email', cleanEmail)
+                    .single()
+            );
 
             if (emailError && emailError.code !== 'PGRST116') throw emailError;
             if (existingEmail) {
@@ -78,26 +90,39 @@ const Register = () => {
             }
 
             // 3. Insert NEW record
-            const { error: insertError } = await supabase
-                .from('registrations')
-                .insert([
-                    {
-                        full_name: formData.fullName.trim(),
-                        roll_number: cleanRollNumber,
-                        email: cleanEmail,
-                        phone: cleanPhone,
-                        department: formData.department,
-                        year: formData.year
-                    }
-                ]);
+            const { error: insertError } = await fetchWithTimeout(
+                supabase
+                    .from('registrations')
+                    .insert([
+                        {
+                            full_name: formData.fullName.trim(),
+                            roll_number: cleanRollNumber,
+                            email: cleanEmail,
+                            phone: cleanPhone,
+                            department: formData.department,
+                            year: formData.year
+                        }
+                    ])
+            );
 
             if (insertError) throw insertError;
 
             setStatus({ type: 'success', message: 'Registration Successful! Welcome to the Network.' });
             setFormData({ fullName: '', rollNumber: '', email: '', phone: '', department: '', year: '' });
         } catch (error) {
-            console.error(error);
-            setStatus({ type: 'error', message: error.message || 'Transmission Failed. Check connection and try again.' });
+            console.error('Registration Error:', error);
+            let errorMsg = error.message || 'Transmission Failed. Check connection and try again.';
+
+            // Explicitly catch RLS security errors
+            if (errorMsg.includes('row-level security') || error.code === '42501' || error.code === 'PGRST116') {
+                errorMsg = 'SYSTEM LOCKED: Row Level Security is active. Admin MUST disable it in Supabase for registrations to work.';
+            }
+            // Explicitly catch Network/Timeout errors
+            else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('Timed Out') || errorMsg.includes('Network')) {
+                errorMsg = 'NETWORK ERROR: Your internet connection (Mobile Data / Wi-Fi) is blocking the database request. Try switching to a different network or turning on a VPN.';
+            }
+
+            setStatus({ type: 'error', message: errorMsg });
         } finally {
             setLoading(false);
         }
