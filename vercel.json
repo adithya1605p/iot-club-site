@@ -2,7 +2,11 @@
     "rewrites": [
         {
             "source": "/supabase/:match*",
-            "destination": "https://glkaksrfoznewagmeusk.supabase.co/:match*"
+            "destination": "https://[YOUR_SUPABASE_DOMAIN_FROM_ENV]/:match*"
+        },
+        {
+            "source": "/arxiv/:match*",
+            "destination": "https://export.arxiv.org/:match*"
         },
         {
             "source": "/(.*)",

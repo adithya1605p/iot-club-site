@@ -1,17 +1,26 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
+    const { user, signOut } = useAuth();
+
+    const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com', '24r11a0535@gcet.edu.in'];
+    const isAdmin = user && ADMIN_EMAILS.includes(user.email);
 
     const navLinks = [
         { name: 'HOME', path: '/' },
         { name: 'ABOUT', path: '/about' },
         { name: 'EVENTS', path: '/events' },
+        { name: 'LEARN', path: '/learn' },
         { name: 'TEAM', path: '/team' },
-        { name: 'JOIN', path: '/register' },
+        ...(isAdmin ? [{ name: 'COMMAND CTR', path: '/admin' }] : []),
+        ...(user
+            ? [{ name: 'LOGOUT', action: signOut }]
+            : [{ name: 'LOGIN / JOIN', path: '/login' }])
     ];
 
     return (
@@ -34,16 +43,26 @@ const Navbar = () => {
                     <div className="hidden md:flex">
                         <div className="ml-10 flex items-baseline space-x-1">
                             {navLinks.map((link) => (
-                                <Link
-                                    key={link.path}
-                                    to={link.path}
-                                    className={`relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${location.pathname === link.path
-                                        ? 'text-black bg-neon-cyan shadow-[0_0_15px_rgba(0,255,255,0.4)]'
-                                        : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                        }`}
-                                >
-                                    {link.name}
-                                </Link>
+                                link.action ? (
+                                    <button
+                                        key={link.name}
+                                        onClick={link.action}
+                                        className="relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full text-red-400 hover:text-white hover:bg-red-500/20 flex items-center gap-2"
+                                    >
+                                        <LogOut size={16} /> {link.name}
+                                    </button>
+                                ) : (
+                                    <Link
+                                        key={link.path}
+                                        to={link.path}
+                                        className={`relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${location.pathname === link.path
+                                            ? 'text-black bg-neon-cyan shadow-[0_0_15px_rgba(0,255,255,0.4)]'
+                                            : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        {link.name}
+                                    </Link>
+                                )
                             ))}
                         </div>
                     </div>
@@ -65,17 +84,30 @@ const Navbar = () => {
                 <div className="md:hidden bg-black/90 backdrop-blur-xl border-b border-white/10 absolute top-20 left-0 w-full z-40">
                     <div className="px-6 py-8 space-y-4">
                         {navLinks.map((link) => (
-                            <Link
-                                key={link.path}
-                                to={link.path}
-                                onClick={() => setIsOpen(false)}
-                                className={`block px-5 py-4 rounded-xl text-lg font-bold tracking-widest transition-all border border-transparent ${location.pathname === link.path
-                                    ? 'text-black bg-neon-cyan border-neon-cyan shadow-[0_0_20px_rgba(0,255,255,0.3)]'
-                                    : 'text-gray-400 border-white/5 hover:border-white/20 hover:text-white hover:bg-white/5'
-                                    }`}
-                            >
-                                {link.name}
-                            </Link>
+                            link.action ? (
+                                <button
+                                    key={link.name}
+                                    onClick={() => {
+                                        link.action();
+                                        setIsOpen(false);
+                                    }}
+                                    className="block w-full text-left px-5 py-4 rounded-xl text-lg font-bold tracking-widest transition-all border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:text-white"
+                                >
+                                    {link.name}
+                                </button>
+                            ) : (
+                                <Link
+                                    key={link.path}
+                                    to={link.path}
+                                    onClick={() => setIsOpen(false)}
+                                    className={`block px-5 py-4 rounded-xl text-lg font-bold tracking-widest transition-all border border-transparent ${location.pathname === link.path
+                                        ? 'text-black bg-neon-cyan border-neon-cyan shadow-[0_0_20px_rgba(0,255,255,0.3)]'
+                                        : 'text-gray-400 border-white/5 hover:border-white/20 hover:text-white hover:bg-white/5'
+                                        }`}
+                                >
+                                    {link.name}
+                                </Link>
+                            )
                         ))}
                     </div>
                 </div>

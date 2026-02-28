@@ -1,0 +1,25 @@
+2e4e95e add AI&ML department info and special thanks to HOD
+faf1d7c add gcet.edu.in email domain validation
+43dd7da add civil, mech depts and update registration subtitle
+ef6e893 update duplicate registration to show whatsapp link
+35d3e4f add robust registration validation and duplicate checking
+b7461da add elegant breathing glow and smooth glass card hover effects
+6985235 add instagram link to home page CTA
+b53ac9e add updated image assets for college logo and team member
+f62e6eb update features section with realistic club activities
+670f60f update about logos and home link
+5aa01af chore: update team member images for isha, shreeya, srikar
+4b3831b feat: admin delete, dept updates, and ui fixes
+f017d5f feat: content updates, whatsapp link, and bug fixes
+fd3e246 fix: move static assets to public folder for production build
+9544d81 fix: add missing supabase dependency for vercel build
+
+STATUS
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	git_log.txt
+
+nothing added to commit but untracked files present (use "git add" to track)

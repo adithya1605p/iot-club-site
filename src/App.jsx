@@ -7,6 +7,9 @@ import Team from './pages/Team';
 import Contact from './pages/Contact';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
+import LearningHub from './pages/LearningHub';
+import BlogPost from './pages/BlogPost';
+import Auth from './pages/Auth';
 import KonamiCode from './components/KonamiCode';
 
 function App() {
@@ -23,6 +26,9 @@ function App() {
           <Route path="/team" element={<Team />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/learn" element={<LearningHub />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
+          <Route path="/login" element={<Auth />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </div>
