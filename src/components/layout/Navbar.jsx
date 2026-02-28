@@ -16,6 +16,7 @@ const Navbar = () => {
         { name: 'ABOUT', path: '/about' },
         { name: 'EVENTS', path: '/events' },
         { name: 'LEARN', path: '/learn' },
+        { name: 'ARMORY', path: '/projects' },
         { name: 'TEAM', path: '/team' },
         ...(isAdmin ? [{ name: 'COMMAND CTR', path: '/admin' }] : []),
         ...(user
