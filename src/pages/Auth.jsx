@@ -48,7 +48,13 @@ const Auth = () => {
                 setIsLogin(true);
             }
         } catch (err) {
-            setError({ type: 'error', message: err.message || 'An error occurred during authentication.' });
+            // Supabase can return errors as nested objects; extract string safely
+            const msg = typeof err?.message === 'string'
+                ? err.message
+                : typeof err === 'string'
+                    ? err
+                    : JSON.stringify(err?.message ?? err) || 'An error occurred during authentication.';
+            setError({ type: 'error', message: msg });
         } finally {
             setLoading(false);
         }
