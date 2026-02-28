@@ -138,125 +138,29 @@ const Register = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight"
                     >
-                        INITIATE <span className="text-neon-cyan">PROTOCOL</span>
+                        PROTOCOL <span className="text-neon-cyan">CONCLUDED</span>
                     </motion.h2>
-                    <p className="text-gray-400 font-mono">Enter your credentials to register for the IoT Club recruitments 2026.</p>
+                    <p className="text-gray-400 font-mono">IoT Club recruitments 2026 registration window has officially closed.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InputGroup
-                            icon={<User size={18} />}
-                            name="fullName"
-                            placeholder="Full Name"
-                            value={formData.fullName}
-                            onChange={handleChange}
-                            required
-                        />
-                        <InputGroup
-                            icon={<Hash size={18} />}
-                            name="rollNumber"
-                            placeholder="Roll Number"
-                            value={formData.rollNumber}
-                            onChange={handleChange}
-                            maxLength="10"
-                            required
-                        />
-                        <InputGroup
-                            icon={<Mail size={18} />}
-                            name="email"
-                            type="email"
-                            placeholder="College Email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                        <InputGroup
-                            icon={<Smartphone size={18} />}
-                            name="phone"
-                            type="tel"
-                            placeholder="Phone Number"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            maxLength="10"
-                            required
-                        />
-                        <div className="space-y-1">
-                            <label className="text-xs text-neon-cyan font-mono uppercase tracking-wider ml-1">Department</label>
-                            <select
-                                name="department"
-                                value={formData.department}
-                                onChange={handleChange}
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-neon-cyan focus:outline-none transition-colors appearance-none"
-                                required
-                            >
-                                <option value="" disabled>Select Department</option>
-                                <option value="CSE">CSE</option>
-                                <option value="CS">CS (Cyber Security)</option>
-                                <option value="ECE">ECE</option>
-                                <option value="EEE">EEE</option>
-                                <option value="AIML">AI&ML</option>
-                                <option value="DS">Data Science</option>
-                                <option value="CIVIL">Civil Engineering</option>
-                                <option value="MECH">Mechanical Engineering</option>
-                            </select>
-                        </div>
-                        <div className="space-y-1">
-                            <label className="text-xs text-neon-cyan font-mono uppercase tracking-wider ml-1">Year</label>
-                            <select
-                                name="year"
-                                value={formData.year}
-                                onChange={handleChange}
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-neon-cyan focus:outline-none transition-colors appearance-none"
-                                required
-                            >
-                                <option value="" disabled>Select Year</option>
-                                <option value="1">1st Year</option>
-                                <option value="2">2nd Year</option>
-                                <option value="3">3rd Year</option>
-                                <option value="4">4th Year</option>
-                            </select>
-                        </div>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="p-8 md:p-12 rounded-xl bg-neon-cyan/5 border border-neon-cyan/20 text-center space-y-6 flex flex-col items-center justify-center my-8"
+                >
+                    <div className="w-20 h-20 rounded-full bg-neon-cyan/10 flex items-center justify-center mb-2">
+                        <CheckCircle size={40} className="text-neon-cyan" />
                     </div>
-
-
-                    {status.message && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            className={`p-6 rounded-xl flex flex-col items-center justify-center text-center gap-4 shadow-xl ${status.type === 'success' ? 'bg-green-500/10 text-green-400 border-2 border-green-500/50' : 'bg-red-500/10 text-red-400 border border-red-500/30'}`}
-                        >
-                            <div className="flex items-center gap-3">
-                                {status.type === 'success' ? <CheckCircle size={28} className="text-green-500 flex-shrink-0" /> : <AlertCircle size={24} className="flex-shrink-0" />}
-                                <span className="font-mono text-base md:text-lg font-bold">{status.message}</span>
-                            </div>
-
-                            {status.type === 'success' && (
-                                <div className="mt-4 w-full animate-bounce">
-                                    <a
-                                        href="https://chat.whatsapp.com/BreciBrPAMDEmBwhjMmrR1"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-400 text-black px-6 py-4 rounded-xl font-black text-lg md:text-xl uppercase tracking-widest shadow-[0_0_20px_rgba(34,197,94,0.6)] transition-all hover:scale-105"
-                                    >
-                                        <Smartphone size={24} />
-                                        JOIN WHATSAPP GROUP NOW
-                                    </a>
-                                    <p className="text-gray-400 text-xs mt-3 font-mono">You MUST join the group to receive updates.</p>
-                                </div>
-                            )}
-                        </motion.div>
-                    )}
-
-                    <Button
-                        variant="primary"
-                        type="submit"
-                        className="w-full py-4 text-lg font-bold tracking-widest uppercase"
-                        disabled={loading}
-                    >
-                        {loading ? <span className="flex items-center gap-2"><Loader2 className="animate-spin" /> Transmitting...</span> : 'Confirm Registration'}
-                    </Button>
-                </form>
+                    <h3 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-wider">Registrations are Closed</h3>
+                    <p className="text-gray-400 font-mono max-w-md mx-auto">
+                        Thank you to everyone who applied! We are no longer accepting new initiations.
+                    </p>
+                    <div className="mt-8 py-4 px-6 border border-white/10 rounded-lg bg-black/40 inline-block w-full text-center">
+                        <p className="text-neon-cyan font-bold text-lg md:text-xl uppercase tracking-widest">
+                            See you at the recruitment rounds!
+                        </p>
+                    </div>
+                </motion.div>
             </Card>
         </div>
     );

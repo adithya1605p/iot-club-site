@@ -15,7 +15,7 @@ const Events = () => {
         {
             id: 1,
             title: "BID2BUILD IDEATHON",
-            date: "22nd - 23rd August",
+            date: "22nd and 23rd August 2025",
             time: "2 Days Event",
             location: "GCET Campus",
             image: "/events/bid2build_1.jpeg",
@@ -23,6 +23,26 @@ const Events = () => {
             desc: "A flagship technical event where students bid for problem statements and built innovative solutions. Themes included Open Innovation, Agritech, Edutech, and Health Care. Over ₹16,000 in prizes were awarded to the top teams.",
             status: "Completed",
             gallery: getImages('bid2build', 7, 'jpeg').map(img => img.replace('.jpeg', '.jpeg')) // Simple mapping, some might be png but extract script mostly did jpeg
+        },
+        {
+            id: 0,
+            title: "Sensor Strike",
+            date: "14 Nov 2024",
+            time: "Full Day",
+            location: "CSE Seminar Hall Block-1",
+            image: "/events/sensor_strike_7.jpeg",
+            category: "Flagship Event",
+            desc: "An exciting event organized by the IoT club focusing on hands-on experiences with different types of sensors, real-time data acquisition, and problem solving. Competitions included Sensor Showdown, Smart Snatch, and Circuit Chase!",
+            status: "Completed",
+            gallery: [
+                '/events/sensor_strike_7.jpeg',
+                '/events/sensor_strike_1.jpg',
+                '/events/sensor_strike_2.jpg',
+                '/events/sensor_strike_3.jpg',
+                '/events/sensor_strike_4.jpeg',
+                '/events/sensor_strike_5.jpeg',
+                '/events/sensor_strike_6.jpeg'
+            ]
         },
         {
             id: 2,
