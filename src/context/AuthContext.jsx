@@ -3,8 +3,9 @@ import { supabase } from '../lib/supabaseClient';
 
 const AuthContext = createContext({});
 
-// Fallback hardcoded admin emails in case DB role hasn't been set yet
-const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com', '24r11a0535@gcet.edu.in'];
+// Fallback hardcoded admin emails — only use for accounts that pre-date the DB role system
+// To grant admin to anyone else, set role='admin' in the profiles table
+const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com'];
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
