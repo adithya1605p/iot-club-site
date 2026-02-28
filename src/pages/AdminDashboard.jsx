@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import BlogEditor from '../components/admin/BlogEditor';
 import ManageBlogs from '../components/admin/ManageBlogs';
 import EventAnalytics from '../components/admin/EventAnalytics';
+import ManageEvents from '../components/admin/ManageEvents';
 
 const AdminDashboard = () => {
     const { user, loading: authLoading } = useAuth();
@@ -18,6 +19,8 @@ const AdminDashboard = () => {
     const [registrations, setRegistrations] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [stats, setStats] = useState({ total: 0, byDept: {}, byYear: {} });
+    const [eventsList, setEventsList] = useState([]);
+    const [selectedEventId, setSelectedEventId] = useState('all');
 
     // Users State
     const [users, setUsers] = useState([]);
@@ -33,6 +36,7 @@ const AdminDashboard = () => {
         if (isAuthorized) {
             if (activeTab === 'registrations') {
                 fetchData();
+                fetchEventsDropdown();
             } else {
                 fetchUsers();
             }
@@ -40,6 +44,15 @@ const AdminDashboard = () => {
             setLoading(false);
         }
     }, [isAuthorized, user, activeTab]);
+
+    const fetchEventsDropdown = async () => {
+        try {
+            const { data } = await supabase.from('events').select('id, title').order('created_at', { ascending: false });
+            if (data) setEventsList(data);
+        } catch (error) {
+            console.error('Error fetching events dropdown', error);
+        }
+    };
 
     const [errorMsg, setErrorMsg] = useState(null);
 
@@ -165,7 +178,7 @@ const AdminDashboard = () => {
         const headers = ['Full Name', 'Roll Number', 'Email', 'Phone', 'Department', 'Year', 'Registered At'];
         const csvRows = [headers.join(',')];
 
-        registrations.forEach(row => {
+        filteredData.forEach(row => {
             const values = [
                 row.full_name,
                 row.roll_number,
@@ -188,11 +201,17 @@ const AdminDashboard = () => {
         a.click();
     };
 
-    const filteredData = registrations.filter(reg =>
-        reg.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.roll_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredData = registrations.filter(reg => {
+        const matchesSearch = reg.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reg.roll_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reg.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesEvent = selectedEventId === 'all' ? true :
+            selectedEventId === 'legacy' ? (reg.event_id === null || reg.event_id === undefined) :
+                reg.event_id === selectedEventId;
+
+        return matchesSearch && matchesEvent;
+    });
 
     if (authLoading) {
         return <div className="min-h-screen bg-black flex items-center justify-center font-mono text-neon-cyan text-xl">Verifying clearancce...</div>;
@@ -263,6 +282,12 @@ const AdminDashboard = () => {
                     Event Analytics
                 </button>
                 <button
+                    onClick={() => setActiveTab('manage-events')}
+                    className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'manage-events' ? 'bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    Event Factory
+                </button>
+                <button
                     onClick={() => setActiveTab('manage-blogs')}
                     className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'manage-blogs' ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
                 >
@@ -329,23 +354,45 @@ const AdminDashboard = () => {
                 <BlogEditor />
             ) : activeTab === 'manage-blogs' ? (
                 <ManageBlogs />
+            ) : activeTab === 'manage-events' ? (
+                <ManageEvents />
             ) : activeTab === 'analytics' ? (
                 <EventAnalytics />
             ) : (
                 <Card className="border-white/10 w-full mb-8">
                     <div className="p-4 border-b border-white/10 flex flex-col md:flex-row gap-4 items-center bg-white/5">
-                        <div className="relative w-full max-w-sm">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                            <input
-                                type="text"
-                                placeholder={activeTab === 'registrations' ? "Search Reg: Name, Email or ID..." : "Search Users: Name, Roll No..."}
-                                value={activeTab === 'registrations' ? searchTerm : userSearchTerm}
-                                onChange={(e) => activeTab === 'registrations' ? setSearchTerm(e.target.value) : setUserSearchTerm(e.target.value)}
-                                className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-neon-cyan focus:outline-none transition-colors text-sm"
-                            />
-                        </div>
-                        <div className="ml-auto text-xs text-gray-500 font-mono">
-                            Showing {activeTab === 'registrations' ? filteredData.length : users.filter(u => u.display_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.roll_number?.toLowerCase().includes(userSearchTerm.toLowerCase())).length} records
+                        <div className="flex flex-col md:flex-row gap-4 w-full justify-between items-center relative">
+                            <div className="relative w-full max-w-sm">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder={activeTab === 'registrations' ? "Search Reg: Name, Email or ID..." : "Search Users: Name, Roll No..."}
+                                    value={activeTab === 'registrations' ? searchTerm : userSearchTerm}
+                                    onChange={(e) => activeTab === 'registrations' ? setSearchTerm(e.target.value) : setUserSearchTerm(e.target.value)}
+                                    className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-neon-cyan focus:outline-none transition-colors text-sm"
+                                />
+                            </div>
+
+                            {activeTab === 'registrations' && (
+                                <select
+                                    className="bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white font-mono text-sm outline-none focus:border-neon-cyan max-w-sm"
+                                    value={selectedEventId}
+                                    onChange={(e) => {
+                                        setSelectedEventId(e.target.value);
+                                        // Optional: Recalculate stats based on filter if you want
+                                    }}
+                                >
+                                    <option value="all">All Registrations</option>
+                                    <option value="legacy">Legacy Recruitment (Phase 1-6)</option>
+                                    {eventsList.map(ev => (
+                                        <option key={ev.id} value={ev.id}>{ev.title}</option>
+                                    ))}
+                                </select>
+                            )}
+
+                            <div className="text-xs text-gray-500 font-mono">
+                                Showing {activeTab === 'registrations' ? filteredData.length : users.filter(u => u.display_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.roll_number?.toLowerCase().includes(userSearchTerm.toLowerCase())).length} records
+                            </div>
                         </div>
                     </div>
 

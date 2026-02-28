@@ -10,6 +10,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import LearningHub from './pages/LearningHub';
 import BlogPost from './pages/BlogPost';
 import Auth from './pages/Auth';
+import DynamicRegistration from './pages/DynamicRegistration';
 import KonamiCode from './components/KonamiCode';
 
 function App() {
@@ -25,7 +26,8 @@ function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/team" element={<Team />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Register />} /> {/* Closed Recruitment */}
+          <Route path="/register/:slug" element={<DynamicRegistration />} />
           <Route path="/learn" element={<LearningHub />} />
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/login" element={<Auth />} />
