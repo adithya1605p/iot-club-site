@@ -143,14 +143,11 @@ const Auth = () => {
                                             >
                                                 <option value="" disabled className="text-gray-500">Select Branch</option>
                                                 <option value="CSE">CSE</option>
-                                                <option value="IT">IT</option>
                                                 <option value="ECE">ECE</option>
                                                 <option value="EEE">EEE</option>
                                                 <option value="MECH">MECH</option>
                                                 <option value="CIVIL">CIVIL</option>
-                                                <option value="AIML">AIML</option>
-                                                <option value="AIDS">AIDS</option>
-                                                <option value="IOT">IOT</option>
+                                                <option value="AIML">AI & ML</option>
                                                 <option value="DS">DATA SCIENCE</option>
                                                 <option value="CS">CYBER SECURITY</option>
                                                 <option value="OTHER">OTHER</option>

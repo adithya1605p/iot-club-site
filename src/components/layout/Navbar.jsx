@@ -6,10 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
-    const { user, signOut } = useAuth();
-
-    const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com', '24r11a0535@gcet.edu.in'];
-    const isAdmin = user && ADMIN_EMAILS.includes(user.email);
+    const { user, signOut, isAdmin } = useAuth();
 
     const navLinks = [
         { name: 'HOME', path: '/' },
