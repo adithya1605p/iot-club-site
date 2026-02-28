@@ -12,7 +12,7 @@ import EventAnalytics from '../components/admin/EventAnalytics';
 import ManageEvents from '../components/admin/ManageEvents';
 
 const AdminDashboard = () => {
-    const { user, loading: authLoading } = useAuth();
+    const { user, isAdmin, loading: authLoading } = useAuth();
     const [activeTab, setActiveTab] = useState('users'); // 'registrations' or 'users'
 
     // Registrations State
@@ -28,9 +28,8 @@ const AdminDashboard = () => {
 
     const [loading, setLoading] = useState(true);
 
-    const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com']; // Add other admins here
-
-    const isAuthorized = user && ADMIN_EMAILS.includes(user.email);
+    // Use DB-driven isAdmin from AuthContext (no hardcoded email list needed)
+    const isAuthorized = isAdmin;
 
     useEffect(() => {
         if (isAuthorized) {
