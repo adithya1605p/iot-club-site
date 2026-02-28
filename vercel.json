@@ -1,5 +1,4 @@
 {
-    "toolbar": false,
     "rewrites": [
         {
             "source": "/supabase/:match*",
