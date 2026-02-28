@@ -13,13 +13,13 @@ const VAULT_ITEMS = [
         id: 'book-1', title: 'Arduino for Dummies', category: 'Books',
         description: 'The perfect starting point for beginners. Covers the Arduino IDE, basic circuits, sensors, motors, and your first real projects — no prior experience needed.',
         type: 'pdf', icon: <BookOpen className="text-yellow-400" size={20} />,
-        link: '/books/arduino-for-dummies.pdf', size: '~15 MB', download: true,
+        link: 'https://drive.google.com/uc?export=download&id=1vujIzw3ADpyRn2jkRZQ-J7-2U3UL4_gb', size: '~15 MB', download: true,
     },
     {
         id: 'book-2', title: 'Designing the Internet of Things', category: 'Books',
         description: 'A practical guide to building real IoT products — from prototyping with Arduino/Raspberry Pi to cloud connectivity, data, and product design thinking.',
         type: 'pdf', icon: <BookOpen className="text-orange-400" size={20} />,
-        link: '/books/designing-iot.pdf', size: '~8 MB', download: true,
+        link: 'https://drive.google.com/uc?export=download&id=1Wt2SVa4nidgApz-SsPPNyuVyGDUIst6I', size: '~8 MB', download: true,
     },
 
     // ── Simulators ───────────────────────────────────────────────────────
