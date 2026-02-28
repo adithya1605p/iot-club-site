@@ -8,12 +8,125 @@ import NewsCard from '../components/learning/NewsCard';
 import PaperCard from '../components/learning/PaperCard';
 
 const VAULT_ITEMS = [
-    { id: 1, title: 'ESP32 Pinout & Specs', category: 'Microcontrollers', description: 'High-res diagram of the 38-pin ESP32 DEVKIT V1. Essential for wiring sensors and avoiding power shorts.', type: 'pdf', icon: <Cpu className="text-neon-cyan" size={20} />, link: '#', size: '2.4 MB' },
-    { id: 2, title: 'Arduino Uno R3 Reference', category: 'Microcontrollers', description: 'Official schematic, analog/digital pin mappings, and power limits for the standard Uno.', type: 'pdf', icon: <Cpu className="text-neon-purple" size={20} />, link: '#', size: '1.1 MB' },
-    { id: 3, title: 'DHT11 vs DHT22 Guide', category: 'Sensors', description: 'Comparison chart for temp/humidity sensors including pull-up resistor requirements and sample code.', type: 'pdf', icon: <Archive className="text-blue-400" size={20} />, link: '#', size: '0.8 MB' },
-    { id: 4, title: 'CP210x USB–UART Driver', category: 'Drivers', description: 'Windows/Mac driver to flash ESP32 and NodeMCU boards via USB. Fixes "COM Port not found" errors.', type: 'exe', icon: <Server className="text-green-400" size={20} />, link: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', size: 'External' },
-    { id: 5, title: 'CH340 Serial Driver', category: 'Drivers', description: 'Required for generic Arduino clones. Install this if your PC doesn\'t recognize your newly plugged-in board.', type: 'zip', icon: <Server className="text-green-400" size={20} />, link: '#', size: '1.5 MB' },
-    { id: 6, title: 'I2C Scanner Sketch (C++)', category: 'Code', description: 'Arduino sketch that scans the I2C bus and outputs hex addresses of all connected devices (LCDs, OLEDs).', type: 'code', icon: <FileText className="text-gray-400" size={20} />, link: '#', size: '2 KB' },
+    // ── Books ────────────────────────────────────────────────────────────
+    {
+        id: 'book-1', title: 'Arduino for Dummies', category: 'Books',
+        description: 'The perfect starting point for beginners. Covers the Arduino IDE, basic circuits, sensors, motors, and your first real projects — no prior experience needed.',
+        type: 'pdf', icon: <BookOpen className="text-yellow-400" size={20} />,
+        link: '/books/arduino-for-dummies.pdf', size: '~15 MB', download: true,
+    },
+    {
+        id: 'book-2', title: 'Designing the Internet of Things', category: 'Books',
+        description: 'A practical guide to building real IoT products — from prototyping with Arduino/Raspberry Pi to cloud connectivity, data, and product design thinking.',
+        type: 'pdf', icon: <BookOpen className="text-orange-400" size={20} />,
+        link: '/books/designing-iot.pdf', size: '~8 MB', download: true,
+    },
+
+    // ── Simulators ───────────────────────────────────────────────────────
+    {
+        id: 'sim-1', title: 'TinkerCAD Circuits', category: 'Simulators',
+        description: 'Browser-based Arduino + circuit simulator by Autodesk. Build and test circuits with no hardware needed. Great for beginners to experiment safely.',
+        type: 'link', icon: <Cpu className="text-neon-cyan" size={20} />,
+        link: 'https://www.tinkercad.com/circuits', size: 'Free',
+    },
+    {
+        id: 'sim-2', title: 'Wokwi — ESP32 & Arduino Simulator', category: 'Simulators',
+        description: 'The most realistic online simulator for ESP32, Arduino Uno/Mega, Raspberry Pi Pico. Supports WiFi, OLED displays, sensors and real C++ code.',
+        type: 'link', icon: <Cpu className="text-neon-purple" size={20} />,
+        link: 'https://wokwi.com', size: 'Free',
+    },
+    {
+        id: 'sim-3', title: 'Falstad Circuit Simulator', category: 'Simulators',
+        description: 'Simulate analog & digital circuits live in your browser. Great for understanding how resistors, capacitors, op-amps and logic gates work before building.',
+        type: 'link', icon: <Cpu className="text-blue-400" size={20} />,
+        link: 'https://www.falstad.com/circuit/', size: 'Free',
+    },
+
+    // ── Learning & Wikis ─────────────────────────────────────────────────
+    {
+        id: 'wiki-1', title: 'All About Circuits', category: 'Learning',
+        description: 'Free textbooks on DC/AC circuits, semiconductors, and digital logic. The go-to electronics theory reference for students — like Khan Academy for EE.',
+        type: 'link', icon: <FileText className="text-green-400" size={20} />,
+        link: 'https://www.allaboutcircuits.com', size: 'Free',
+    },
+    {
+        id: 'wiki-2', title: 'Random Nerd Tutorials', category: 'Learning',
+        description: 'Hundreds of step-by-step ESP32 / ESP8266 / Arduino tutorials with wiring diagrams and copy-paste code. Best practical IoT tutorial site online.',
+        type: 'link', icon: <FileText className="text-neon-cyan" size={20} />,
+        link: 'https://randomnerdtutorials.com', size: 'Free',
+    },
+    {
+        id: 'wiki-3', title: 'Last Minute Engineers', category: 'Learning',
+        description: 'Detailed tutorials for common IoT sensors and modules (DHT22, OLED, HC-SR04, SIM800L) with circuit diagrams. Excellent Indian-made resource.',
+        type: 'link', icon: <FileText className="text-yellow-400" size={20} />,
+        link: 'https://lastminuteengineers.com', size: 'Free',
+    },
+    {
+        id: 'wiki-4', title: 'Arduino Official Docs', category: 'Learning',
+        description: 'Official Arduino language reference, library docs, and built-in examples. Bookmark this — every function you will ever need is documented here.',
+        type: 'link', icon: <FileText className="text-blue-400" size={20} />,
+        link: 'https://docs.arduino.cc', size: 'Free',
+    },
+
+    // ── Reddit Communities ───────────────────────────────────────────────
+    {
+        id: 'reddit-1', title: 'r/arduino', category: 'Community',
+        description: '700K+ members. Post your project, ask for help with code or wiring, or just browse cool builds. The most active Arduino community online.',
+        type: 'link', icon: <ExternalLink className="text-orange-500" size={20} />,
+        link: 'https://reddit.com/r/arduino', size: 'Community',
+    },
+    {
+        id: 'reddit-2', title: 'r/esp32', category: 'Community',
+        description: 'Dedicated subreddit for ESP32 projects, troubleshooting, and firmware. Great for WiFi/BLE specific questions.',
+        type: 'link', icon: <ExternalLink className="text-orange-500" size={20} />,
+        link: 'https://reddit.com/r/esp32', size: 'Community',
+    },
+    {
+        id: 'reddit-3', title: 'r/IOT', category: 'Community',
+        description: 'News, projects and discussions about the Internet of Things ecosystem — from MQTT protocols to cloud dashboards and edge computing.',
+        type: 'link', icon: <ExternalLink className="text-orange-500" size={20} />,
+        link: 'https://reddit.com/r/IOT', size: 'Community',
+    },
+    {
+        id: 'reddit-4', title: 'r/electronics', category: 'Community',
+        description: 'General electronics community. Good for circuit design questions, component identification, and PCB layout help.',
+        type: 'link', icon: <ExternalLink className="text-orange-500" size={20} />,
+        link: 'https://reddit.com/r/electronics', size: 'Community',
+    },
+
+    // ── Discord Servers ──────────────────────────────────────────────────
+    {
+        id: 'discord-1', title: 'Arduino Discord', category: 'Community',
+        description: 'Official Arduino community Discord. Real-time help from experts, project showcases, and dedicated channels for beginners.',
+        type: 'link', icon: <Server className="text-indigo-400" size={20} />,
+        link: 'https://discord.gg/jQJFwW7', size: 'Discord',
+    },
+    {
+        id: 'discord-2', title: 'ESP32 & MicroPython Discord', category: 'Community',
+        description: 'Active Discord for ESP32 developers using MicroPython, CircuitPython, and C++. Great for firmware-level help.',
+        type: 'link', icon: <Server className="text-indigo-400" size={20} />,
+        link: 'https://discord.gg/RJZMeKGeamV', size: 'Discord',
+    },
+    {
+        id: 'discord-3', title: 'Hackspace / Makers Discord', category: 'Community',
+        description: 'A large maker community Discord with channels for 3D printing, electronics, robotics, and IoT. Good place to find collaborators.',
+        type: 'link', icon: <Server className="text-indigo-400" size={20} />,
+        link: 'https://discord.gg/hackspace', size: 'Discord',
+    },
+
+    // ── Original Drivers/Cheatsheets ─────────────────────────────────────
+    {
+        id: 'drv-1', title: 'CP210x USB–UART Driver', category: 'Drivers',
+        description: 'Windows/Mac driver to flash ESP32 and NodeMCU boards via USB. Fixes "COM Port not found" errors.',
+        type: 'link', icon: <Server className="text-green-400" size={20} />,
+        link: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', size: 'External',
+    },
+    {
+        id: 'drv-2', title: 'CH341SER (CH340 Driver)', category: 'Drivers',
+        description: 'Required for generic Arduino clones and cheap NodeMCU boards. Install this if your PC does not recognize the board.',
+        type: 'link', icon: <Server className="text-green-400" size={20} />,
+        link: 'https://www.wch-ic.com/downloads/CH341SER_EXE.html', size: 'External',
+    },
 ];
 
 const LearningHub = () => {
@@ -255,8 +368,8 @@ const LearningHub = () => {
                                                 {item.icon}
                                             </div>
                                             <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded border ${item.type === 'pdf' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                    item.type === 'code' ? 'bg-white/10 text-gray-300 border-white/20' :
-                                                        'bg-green-500/10 text-green-400 border-green-500/20'
+                                                item.type === 'code' ? 'bg-white/10 text-gray-300 border-white/20' :
+                                                    'bg-green-500/10 text-green-400 border-green-500/20'
                                                 }`}>.{item.type}</span>
                                         </div>
                                         <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-1">{item.category}</p>
