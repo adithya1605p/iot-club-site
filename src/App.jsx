@@ -12,6 +12,9 @@ import BlogPost from './pages/BlogPost';
 import Auth from './pages/Auth';
 import DynamicRegistration from './pages/DynamicRegistration';
 import Projects from './pages/Projects';
+import TelemetryDashboard from './pages/TelemetryDashboard';
+import HardwareVault from './pages/HardwareVault';
+import Leaderboard from './pages/Leaderboard';
 import KonamiCode from './components/KonamiCode';
 
 function App() {
@@ -30,6 +33,9 @@ function App() {
           <Route path="/register" element={<Register />} /> {/* Closed Recruitment */}
           <Route path="/register/:slug" element={<DynamicRegistration />} />
           <Route path="/learn" element={<LearningHub />} />
+          <Route path="/telemetry" element={<TelemetryDashboard />} />
+          <Route path="/vault" element={<HardwareVault />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/login" element={<Auth />} />

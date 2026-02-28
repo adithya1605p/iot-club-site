@@ -1,11 +1,20 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Rss, FileText, Loader2, Search } from 'lucide-react';
+import { BookOpen, Rss, FileText, Loader2, Search, Archive, Download, ExternalLink, Cpu, Server } from 'lucide-react';
 import { fetchIoTNews, fetchArxivPapers } from '../services/api';
 import { supabase } from '../lib/supabaseClient';
 import BlogCard from '../components/learning/BlogCard';
 import NewsCard from '../components/learning/NewsCard';
 import PaperCard from '../components/learning/PaperCard';
+
+const VAULT_ITEMS = [
+    { id: 1, title: 'ESP32 Pinout & Specs', category: 'Microcontrollers', description: 'High-res diagram of the 38-pin ESP32 DEVKIT V1. Essential for wiring sensors and avoiding power shorts.', type: 'pdf', icon: <Cpu className="text-neon-cyan" size={20} />, link: '#', size: '2.4 MB' },
+    { id: 2, title: 'Arduino Uno R3 Reference', category: 'Microcontrollers', description: 'Official schematic, analog/digital pin mappings, and power limits for the standard Uno.', type: 'pdf', icon: <Cpu className="text-neon-purple" size={20} />, link: '#', size: '1.1 MB' },
+    { id: 3, title: 'DHT11 vs DHT22 Guide', category: 'Sensors', description: 'Comparison chart for temp/humidity sensors including pull-up resistor requirements and sample code.', type: 'pdf', icon: <Archive className="text-blue-400" size={20} />, link: '#', size: '0.8 MB' },
+    { id: 4, title: 'CP210x USB–UART Driver', category: 'Drivers', description: 'Windows/Mac driver to flash ESP32 and NodeMCU boards via USB. Fixes "COM Port not found" errors.', type: 'exe', icon: <Server className="text-green-400" size={20} />, link: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', size: 'External' },
+    { id: 5, title: 'CH340 Serial Driver', category: 'Drivers', description: 'Required for generic Arduino clones. Install this if your PC doesn\'t recognize your newly plugged-in board.', type: 'zip', icon: <Server className="text-green-400" size={20} />, link: '#', size: '1.5 MB' },
+    { id: 6, title: 'I2C Scanner Sketch (C++)', category: 'Code', description: 'Arduino sketch that scans the I2C bus and outputs hex addresses of all connected devices (LCDs, OLEDs).', type: 'code', icon: <FileText className="text-gray-400" size={20} />, link: '#', size: '2 KB' },
+];
 
 const LearningHub = () => {
     const [activeTab, setActiveTab] = useState('insights');
@@ -53,7 +62,8 @@ const LearningHub = () => {
     const tabs = [
         { id: 'insights', label: 'Club Insights', icon: <BookOpen size={18} /> },
         { id: 'news', label: 'Live IoT News', icon: <Rss size={18} /> },
-        { id: 'research', label: 'Research Papers', icon: <FileText size={18} /> }
+        { id: 'research', label: 'Research Papers', icon: <FileText size={18} /> },
+        { id: 'vault', label: 'Hardware Vault', icon: <Archive size={18} /> },
     ];
 
     const handleSearch = async (e) => {
@@ -227,6 +237,42 @@ const LearningHub = () => {
                                         </div>
                                     )}
                                 </div>
+                            </motion.div>
+                        )}
+                        {/* Tab 4: Hardware Vault */}
+                        {activeTab === 'vault' && (
+                            <motion.div
+                                key="vault"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                            >
+                                {VAULT_ITEMS.map((item) => (
+                                    <div key={item.id} className="flex flex-col p-5 rounded-2xl bg-black/50 border border-white/10 hover:border-neon-cyan/40 group transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.08)]">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="p-2.5 bg-white/5 rounded-xl border border-white/10 group-hover:border-neon-cyan/30 transition-colors">
+                                                {item.icon}
+                                            </div>
+                                            <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded border ${item.type === 'pdf' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                    item.type === 'code' ? 'bg-white/10 text-gray-300 border-white/20' :
+                                                        'bg-green-500/10 text-green-400 border-green-500/20'
+                                                }`}>.{item.type}</span>
+                                        </div>
+                                        <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-1">{item.category}</p>
+                                        <h3 className="text-white font-bold mb-2 group-hover:text-neon-cyan transition-colors text-sm">{item.title}</h3>
+                                        <p className="text-gray-400 text-xs leading-relaxed flex-1 mb-4">{item.description}</p>
+                                        <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                                            <span className="text-xs text-gray-600 font-mono">{item.size}</span>
+                                            <a href={item.link} target={item.link !== '#' ? '_blank' : '_self'} rel="noreferrer"
+                                                className="flex items-center gap-1.5 text-xs font-mono font-bold px-3 py-1.5 rounded-lg border border-white/20 text-gray-300 hover:bg-neon-cyan hover:text-black hover:border-neon-cyan transition-all">
+                                                {item.type === 'pdf' ? <><ExternalLink size={12} /> VIEW</> :
+                                                    item.type === 'code' ? <><FileText size={12} /> GET</> :
+                                                        <><Download size={12} /> GET</>}
+                                            </a>
+                                        </div>
+                                    </div>
+                                ))}
                             </motion.div>
                         )}
                     </AnimatePresence>
