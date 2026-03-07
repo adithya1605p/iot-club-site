@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import KonamiCode from './components/KonamiCode';
 import PhotoAdjust from './pages/PhotoAdjust';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 // Learning hub pages
 import LearningHub from './pages/LearningHub';
 import BlogPost from './pages/BlogPost';
@@ -43,7 +44,7 @@ function App() {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/telemetry" element={<TelemetryDashboard />} />
           <Route path="/projects" element={<Projects />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
           <Route path="/photo-adjust" element={<PhotoAdjust />} />
         </Routes>
       </div>

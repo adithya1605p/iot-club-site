@@ -4,8 +4,8 @@ import { supabase } from '../lib/supabaseClient';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { Download, Search, Users, PieChart, BarChart3, Lock, RefreshCw, AlertCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import BlogEditor from '../components/admin/BlogEditor';
 import ManageBlogs from '../components/admin/ManageBlogs';
 import EventAnalytics from '../components/admin/EventAnalytics';
@@ -13,6 +13,7 @@ import ManageEvents from '../components/admin/ManageEvents';
 
 const AdminDashboard = () => {
     const { user, loading: authLoading } = useAuth();
+
     const [activeTab, setActiveTab] = useState('users'); // 'registrations' or 'users'
 
     // Registrations State
@@ -28,7 +29,7 @@ const AdminDashboard = () => {
 
     const [loading, setLoading] = useState(true);
 
-    const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com']; // Add other admins here
+    const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com', '24r11a0535@gcet.edu.in']; // Add other admins here
 
     const isAuthorized = user && ADMIN_EMAILS.includes(user.email);
 
@@ -202,9 +203,9 @@ const AdminDashboard = () => {
     };
 
     const filteredData = registrations.filter(reg => {
-        const matchesSearch = reg.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            reg.roll_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            reg.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (reg.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (reg.roll_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (reg.email || '').toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesEvent = selectedEventId === 'all' ? true :
             selectedEventId === 'legacy' ? (reg.event_id === null || reg.event_id === undefined) :
@@ -391,7 +392,7 @@ const AdminDashboard = () => {
                             )}
 
                             <div className="text-xs text-gray-500 font-mono">
-                                Showing {activeTab === 'registrations' ? filteredData.length : users.filter(u => u.display_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.roll_number?.toLowerCase().includes(userSearchTerm.toLowerCase())).length} records
+                                Showing {activeTab === 'registrations' ? filteredData.length : users.filter(u => (u.display_name || '').toLowerCase().includes(userSearchTerm.toLowerCase()) || (u.roll_number || '').toLowerCase().includes(userSearchTerm.toLowerCase())).length} records
                             </div>
                         </div>
                     </div>
@@ -470,7 +471,7 @@ const AdminDashboard = () => {
                                             <td colSpan="6" className="p-8 text-center text-gray-500">No users found.</td>
                                         </tr>
                                     ) : (
-                                        users.filter(u => u.display_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.roll_number?.toLowerCase().includes(userSearchTerm.toLowerCase())).map((u) => (
+                                        users.filter(u => (u.display_name || '').toLowerCase().includes(userSearchTerm.toLowerCase()) || (u.roll_number || '').toLowerCase().includes(userSearchTerm.toLowerCase())).map((u) => (
                                             <tr key={u.id} className="hover:bg-white/5 transition-colors">
                                                 <td className="p-4">
                                                     <div className="font-medium text-white">{u.display_name}</div>

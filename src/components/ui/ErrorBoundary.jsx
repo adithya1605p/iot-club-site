@@ -8,7 +8,7 @@ class ErrorBoundary extends React.Component {
     }
 
     static getDerivedStateFromError(error) {
-        return { hasError: true };
+        return { hasError: true, errorMsg: error.message };
     }
 
     componentDidCatch(error, errorInfo) {
@@ -20,7 +20,8 @@ class ErrorBoundary extends React.Component {
             return (
                 <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
                     <h1 className="text-4xl font-bold text-neon-purple mb-4">System Malfunction</h1>
-                    <p className="text-gray-400 mb-8">Critical error detected. Automatic recovery failed.</p>
+                    <p className="text-gray-400 mb-4">Critical event component crashed.</p>
+                    <p className="bg-red-500/20 text-red-400 border border-red-500/50 p-4 rounded font-mono text-sm max-w-xl mb-8 whitespace-pre-wrap">{this.state.errorMsg}</p>
                     <Button variant="outline" onClick={() => window.location.reload()}>
                         Reboot System
                     </Button>
