@@ -24,6 +24,7 @@ CREATE TABLE events (
     handouts        jsonb   DEFAULT '[]',          -- [{title, url, type}] type=pdf|drive|link
     submission_link text,                          -- Google Drive folder / Google Form
     gallery         text[]  DEFAULT '{}',          -- existing gallery image paths
+    slug            text    UNIQUE,                -- URL slug for dynamic registration
     created_at      timestamptz DEFAULT now()
 );
 

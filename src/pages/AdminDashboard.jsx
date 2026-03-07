@@ -1,38 +1,56 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-import { Download, Search, Users, PieChart, BarChart3, Lock, RefreshCw, CalendarPlus, Pencil, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Download, Search, Users, PieChart, BarChart3, Lock, RefreshCw, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
+import BlogEditor from '../components/admin/BlogEditor';
+import ManageBlogs from '../components/admin/ManageBlogs';
+import EventAnalytics from '../components/admin/EventAnalytics';
+import ManageEvents from '../components/admin/ManageEvents';
 
 const AdminDashboard = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [pin, setPin] = useState('');
+    const { user, loading: authLoading } = useAuth();
+    const [activeTab, setActiveTab] = useState('users'); // 'registrations' or 'users'
+
+    // Registrations State
     const [registrations, setRegistrations] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [stats, setStats] = useState({ total: 0, byDept: {}, byYear: {} });
-    const [adminTab, setAdminTab] = useState('registrations'); // registrations | events
-    // Events management state
-    const [dbEvents, setDbEvents] = useState([]);
-    const [eventsLoading, setEventsLoading] = useState(false);
-    const [newEvent, setNewEvent] = useState({
-        title: '', tagline: '', date: '', time: '', location: '',
-        category: '', cover_image: '', description: '', status: 'upcoming',
-    });
-    const [savingEvent, setSavingEvent] = useState(false);
-    const [showEventForm, setShowEventForm] = useState(false);
+    const [eventsList, setEventsList] = useState([]);
+    const [selectedEventId, setSelectedEventId] = useState('all');
 
-    // Simple env-based PIN (fallback to '1234' if not set)
-    const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN || '1234';
+    // Users State
+    const [users, setUsers] = useState([]);
+    const [userSearchTerm, setUserSearchTerm] = useState('');
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        if (pin === ADMIN_PIN) {
-            setIsAuthenticated(true);
-            fetchData();
+    const [loading, setLoading] = useState(true);
+
+    const ADMIN_EMAILS = ['iotgcet2024@gmail.com', 'mdaahidsiddiqui@gmail.com', 'admin@gcetiot.com']; // Add other admins here
+
+    const isAuthorized = user && ADMIN_EMAILS.includes(user.email);
+
+    useEffect(() => {
+        if (isAuthorized) {
+            if (activeTab === 'registrations') {
+                fetchData();
+                fetchEventsDropdown();
+            } else {
+                fetchUsers();
+            }
         } else {
-            alert('Access Denied: Invalid Protocol Code');
+            setLoading(false);
+        }
+    }, [isAuthorized, user, activeTab]);
+
+    const fetchEventsDropdown = async () => {
+        try {
+            const { data } = await supabase.from('events').select('id, title').order('created_at', { ascending: false });
+            if (data) setEventsList(data);
+        } catch (error) {
+            console.error('Error fetching events dropdown', error);
         }
     };
 
@@ -50,11 +68,31 @@ const AdminDashboard = () => {
 
             if (error) throw error;
 
-            setRegistrations(data);
-            calculateStats(data);
+            setRegistrations(data || []);
+            calculateStats(data || []);
         } catch (error) {
-            console.error('Error fetching data:', error);
-            setErrorMsg(error.message || 'Failed to fetch data');
+            console.error('Error fetching registrations:', error);
+            setErrorMsg(error.message || 'Failed to fetch registrations');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        setErrorMsg(null);
+
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            setUsers(data || []);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            setErrorMsg(error.message || 'Failed to fetch user profiles');
         } finally {
             setLoading(false);
         }
@@ -99,11 +137,48 @@ const AdminDashboard = () => {
         }
     };
 
+    const promoteToAdmin = async (id, currentRole) => {
+        if (currentRole === 'admin') return;
+        if (!window.confirm('Are you sure you want to promote this user to Admin? They will have full access.')) return;
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({ role: 'admin' })
+                .eq('id', id);
+
+            if (error) throw error;
+
+            // Update local state
+            setUsers(users.map(u => u.id === id ? { ...u, role: 'admin' } : u));
+            alert('User successfully promoted to Admin.');
+        } catch (error) {
+            console.error('Error updating role:', error);
+            alert('Failed to promote user: ' + error.message);
+        }
+    };
+
+    const handleProfileDelete = async (id, name) => {
+        if (!window.confirm(`Are you sure you want to delete ${name || 'this user'}? This will revoke their access to the app.`)) return;
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+            setUsers(users.filter(u => u.id !== id));
+        } catch (err) {
+            console.error("Error deleting user profile", err);
+            alert("Failed to delete user profile: " + err.message);
+        }
+    };
+
     const downloadCSV = () => {
         const headers = ['Full Name', 'Roll Number', 'Email', 'Phone', 'Department', 'Year', 'Registered At'];
         const csvRows = [headers.join(',')];
 
-        registrations.forEach(row => {
+        filteredData.forEach(row => {
             const values = [
                 row.full_name,
                 row.roll_number,
@@ -126,63 +201,44 @@ const AdminDashboard = () => {
         a.click();
     };
 
-    const fetchDbEvents = async () => {
-        setEventsLoading(true);
-        const { data } = await supabase.from('events').select('id,title,status,date,category,registration_open').order('date_iso', { ascending: false });
-        if (data) setDbEvents(data);
-        setEventsLoading(false);
-    };
+    const filteredData = registrations.filter(reg => {
+        const matchesSearch = reg.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reg.roll_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reg.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const handleCreateEvent = async (e) => {
-        e.preventDefault();
-        setSavingEvent(true);
-        await supabase.from('events').insert([newEvent]);
-        setNewEvent({ title: '', tagline: '', date: '', time: '', location: '', category: '', cover_image: '', description: '', status: 'upcoming' });
-        setShowEventForm(false);
-        fetchDbEvents();
-        setSavingEvent(false);
-    };
+        const matchesEvent = selectedEventId === 'all' ? true :
+            selectedEventId === 'legacy' ? (reg.event_id === null || reg.event_id === undefined) :
+                reg.event_id === selectedEventId;
 
-    const handleStatusChange = async (id, status) => {
-        await supabase.from('events').update({ status }).eq('id', id);
-        fetchDbEvents();
-    };
+        return matchesSearch && matchesEvent;
+    });
 
-    const handleToggleReg = async (id, current) => {
-        await supabase.from('events').update({ registration_open: !current }).eq('id', id);
-        fetchDbEvents();
-    };
+    if (authLoading) {
+        return <div className="min-h-screen bg-black flex items-center justify-center font-mono text-neon-cyan text-xl">Verifying clearancce...</div>;
+    }
 
-    const handleDeleteEvent = async (id) => {
-        if (!window.confirm('Delete this event?')) return;
-        await supabase.from('events').delete().eq('id', id);
-        fetchDbEvents();
-    };
-
-    const filteredData = registrations.filter(reg =>
-        reg.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.roll_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-
-    if (!isAuthenticated) {
+    if (!isAuthorized) {
         return (
             <div className="min-h-screen flex items-center justify-center px-4 bg-black">
-                <Card className="w-full max-w-md p-8 border-neon-cyan/30 bg-black/80 backdrop-blur-xl text-center">
-                    <Lock className="w-12 h-12 text-neon-cyan mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-white mb-6">RESTRICTED ACCESS</h2>
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        <input
-                            type="password"
-                            placeholder="Enter Protocol Code"
-                            value={pin}
-                            onChange={(e) => setPin(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-center text-white text-xl tracking-widest focus:border-neon-cyan focus:outline-none"
-                            autoFocus
-                        />
-                        <Button variant="primary" type="submit" className="w-full">Initialize Session</Button>
-                    </form>
+                <Card className="w-full max-w-md p-10 border-red-500/30 bg-black/80 backdrop-blur-xl text-center">
+                    <Lock className="w-16 h-16 text-red-500 mx-auto mb-6" />
+                    <h2 className="text-3xl font-black text-white mb-4 tracking-tight">RESTRICTED ACCESS</h2>
+                    <p className="text-gray-400 font-mono mb-8 text-sm leading-relaxed">
+                        {!user
+                            ? "You must authenticate to access the command center."
+                            : "Your current clearance level is insufficient for this sector."}
+                    </p>
+
+                    {!user ? (
+                        <Link to="/login" className="block w-full py-4 bg-neon-cyan hover:bg-white hover:text-black font-bold font-mono tracking-widest text-black transition-all rounded-xl shadow-[0_0_15px_rgba(0,255,255,0.2)] hover:shadow-[0_0_25px_rgba(0,255,255,0.4)]">
+                            PROCEED TO LOGIN
+                        </Link>
+                    ) : (
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 font-mono text-sm flex items-center gap-3">
+                            <AlertCircle size={18} className="shrink-0" />
+                            <span>Logged in as: {user.email}</span>
+                        </div>
+                    )}
                 </Card>
             </div>
         );
@@ -193,32 +249,61 @@ const AdminDashboard = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Command Center</h1>
-                    <p className="text-gray-400 font-mono text-sm">Real-time Registration Analytics</p>
+                    <p className="text-gray-400 font-mono text-sm">System Administration & Analytics</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="secondary" onClick={fetchData} className="border-white/20">
+                    <Button variant="secondary" onClick={activeTab === 'registrations' ? fetchData : fetchUsers} className="border-white/20">
                         <RefreshCw size={18} />
                     </Button>
                     <Button variant="primary" onClick={downloadCSV} className="flex items-center gap-2">
-                        <Download size={18} /> Export Data
+                        <Download size={18} /> Export Reg. Data
                     </Button>
                 </div>
             </div>
 
-            {/* ── Tab switcher ── */}
-            <div className="flex gap-1 mb-8 border-b border-white/10">
-                {[['registrations', 'Registrations'], ['events', 'Manage Events']].map(([key, label]) => (
-                    <button key={key}
-                        onClick={() => { setAdminTab(key); if (key === 'events') fetchDbEvents(); }}
-                        className={`px-5 py-3 text-sm font-semibold border-b-2 -mb-px transition-colors ${adminTab === key ? 'border-neon-cyan text-neon-cyan' : 'border-transparent text-gray-500 hover:text-gray-300'
-                            }`}
-                    >{label}</button>
-                ))}
+            {/* Tabs */}
+            <div className="flex flex-wrap gap-4 mb-8 border-b border-white/10 pb-4">
+                <button
+                    onClick={() => setActiveTab('users')}
+                    className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'users' ? 'bg-neon-purple text-white shadow-[0_0_15px_rgba(188,19,254,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    User Directory
+                </button>
+                <button
+                    onClick={() => setActiveTab('registrations')}
+                    className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'registrations' ? 'bg-neon-cyan text-black shadow-[0_0_15px_rgba(0,255,255,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    Event Registrations
+                </button>
+                <button
+                    onClick={() => setActiveTab('analytics')}
+                    className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'analytics' ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    Event Analytics
+                </button>
+                <button
+                    onClick={() => setActiveTab('manage-events')}
+                    className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'manage-events' ? 'bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    Event Factory
+                </button>
+                <button
+                    onClick={() => setActiveTab('manage-blogs')}
+                    className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'manage-blogs' ? 'bg-orange-500 text-white shadow-[0_0_15px_rgba(249,115,22,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    Manage Blogs
+                </button>
+                <button
+                    onClick={() => setActiveTab('blog')}
+                    className={`font-mono font-bold tracking-wider uppercase px-4 py-2 rounded-lg transition-colors ${activeTab === 'blog' ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                >
+                    Write Blog CMS
+                </button>
             </div>
 
             {errorMsg && (
                 <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 text-red-500 rounded-lg flex items-center justify-between">
-                    <span>⚠️ Error: {errorMsg}</span>
+                    <span>ΓÜá∩╕Å Error: {errorMsg}</span>
                     <span className="text-xs opacity-70">Check RLS Policies or Table Permissions</span>
                 </div>
             )}
@@ -264,170 +349,169 @@ const AdminDashboard = () => {
                 </Card>
             </div>
 
-            {/* Data Table */}
-            <Card className="border-white/10 w-full mb-8">
-                <div className="p-4 border-b border-white/10 flex flex-col md:flex-row gap-4 items-center bg-white/5">
-                    <div className="relative w-full max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search by Name, Email or ID..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-neon-cyan focus:outline-none transition-colors text-sm"
-                        />
-                    </div>
-                    <div className="ml-auto text-xs text-gray-500 font-mono">
-                        Showing {filteredData.length} records
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-black/50 text-gray-400 text-xs uppercase tracking-wider font-mono">
-                                <th className="p-4 border-b border-white/10">Name</th>
-                                <th className="p-4 border-b border-white/10">Roll No</th>
-                                <th className="p-4 border-b border-white/10">Dept / Year</th>
-                                <th className="p-4 border-b border-white/10">Contact</th>
-                                <th className="p-4 border-b border-white/10">Time</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="p-8 text-center text-gray-500 animate-pulse">Scanning Database...</td>
-                                </tr>
-                            ) : filteredData.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="p-8 text-center text-gray-500">No records found within sector.</td>
-                                </tr>
-                            ) : (
-                                filteredData.map((reg) => (
-                                    <tr key={reg.id} className="hover:bg-white/5 transition-colors">
-                                        <td className="p-4 font-medium text-white">{reg.full_name}</td>
-                                        <td className="p-4 text-neon-cyan font-mono text-sm">{reg.roll_number}</td>
-                                        <td className="p-4 text-gray-300 text-sm">
-                                            <span className="bg-white/10 px-2 py-1 rounded text-xs mr-2">{reg.department}</span>
-                                            <span className="text-gray-500">Yr {reg.year}</span>
-                                        </td>
-                                        <td className="p-4 text-gray-400 text-sm">
-                                            <div className="flex flex-col">
-                                                <span>{reg.email}</span>
-                                                <span className="text-xs opacity-50">{reg.phone}</span>
-                                            </div>
-                                        </td>
-                                        <td className="p-4 text-gray-500 text-xs font-mono">
-                                            {new Date(reg.created_at).toLocaleDateString()}
-                                        </td>
-                                        <td className="p-4 text-right">
-                                            <button
-                                                onClick={() => handleDelete(reg.id)}
-                                                className="text-red-500 hover:text-red-400 text-xs uppercase font-bold tracking-wider px-2 py-1 border border-red-500/30 rounded hover:bg-red-500/10 transition-colors"
-                                            >
-                                                Delete
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </Card>
-
-            {/* ── MANAGE EVENTS TAB ── */}
-            {adminTab === 'events' && (
-                <div>
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-bold text-white">Events</h2>
-                        <button onClick={() => setShowEventForm(v => !v)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-sm font-semibold hover:bg-neon-cyan/20 transition-colors">
-                            <CalendarPlus size={15} /> New Event
-                        </button>
-                    </div>
-
-                    {/* Create form */}
-                    {showEventForm && (
-                        <Card className="mb-8 p-6 border-neon-cyan/20">
-                            <h3 className="text-white font-bold mb-4">Create Event</h3>
-                            <form onSubmit={handleCreateEvent} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {[['title', 'Title *'], ['tagline', 'Tagline'], ['date', 'Date (display)'], ['time', 'Time'], ['location', 'Venue'], ['category', 'Category'], ['cover_image', 'Cover Image URL'],].map(([field, label]) => (
-                                    <div key={field}>
-                                        <label className="text-xs text-gray-500 mb-1 block">{label}</label>
-                                        <input
-                                            value={newEvent[field]} onChange={e => setNewEvent(p => ({ ...p, [field]: e.target.value }))}
-                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-neon-cyan focus:outline-none"
-                                            required={field === 'title'}
-                                        />
-                                    </div>
-                                ))}
-                                <div className="md:col-span-2">
-                                    <label className="text-xs text-gray-500 mb-1 block">Description</label>
-                                    <textarea rows={3} value={newEvent.description} onChange={e => setNewEvent(p => ({ ...p, description: e.target.value }))}
-                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-neon-cyan focus:outline-none resize-none" />
-                                </div>
-                                <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Status</label>
-                                    <select value={newEvent.status} onChange={e => setNewEvent(p => ({ ...p, status: e.target.value }))}
-                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-neon-cyan focus:outline-none">
-                                        <option value="upcoming">Upcoming</option>
-                                        <option value="live">Live</option>
-                                        <option value="ended">Ended</option>
-                                    </select>
-                                </div>
-                                <div className="md:col-span-2 flex gap-3 justify-end">
-                                    <button type="button" onClick={() => setShowEventForm(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">Cancel</button>
-                                    <button type="submit" disabled={savingEvent}
-                                        className="px-6 py-2 rounded-lg bg-neon-cyan text-black font-bold text-sm hover:bg-neon-cyan/80 transition-colors disabled:opacity-50">
-                                        {savingEvent ? 'Saving…' : 'Create Event'}
-                                    </button>
-                                </div>
-                            </form>
-                        </Card>
-                    )}
-
-                    {/* Events list */}
-                    {eventsLoading
-                        ? <p className="text-gray-500 text-center py-10">Loading events…</p>
-                        : (
-                            <div className="space-y-3">
-                                {dbEvents.map(ev => (
-                                    <Card key={ev.id} className="p-4 flex flex-wrap items-center gap-4 border-white/5">
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-white font-semibold text-sm truncate">{ev.title}</p>
-                                            <p className="text-gray-500 text-xs">{ev.category} · {ev.date}</p>
-                                        </div>
-                                        {/* Status toggle */}
-                                        <select value={ev.status} onChange={e => handleStatusChange(ev.id, e.target.value)}
-                                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:border-neon-cyan focus:outline-none">
-                                            <option value="upcoming">Upcoming</option>
-                                            <option value="live">🔴 Live</option>
-                                            <option value="ended">Ended</option>
-                                        </select>
-                                        {/* Reg toggle */}
-                                        <button onClick={() => handleToggleReg(ev.id, ev.registration_open)}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${ev.registration_open ? 'border-green-500/40 text-green-400 bg-green-500/10' : 'border-white/10 text-gray-500 bg-white/5'
-                                                }`}>
-                                            {ev.registration_open ? <ToggleRight size={13} /> : <ToggleLeft size={13} />}
-                                            {ev.registration_open ? 'Reg Open' : 'Reg Closed'}
-                                        </button>
-                                        {/* Detail link */}
-                                        <a href={`/events/${ev.id}`} target="_blank" rel="noreferrer"
-                                            className="px-3 py-1.5 rounded-lg border border-white/10 text-xs text-gray-400 hover:text-white hover:border-white/30 transition-colors flex items-center gap-1">
-                                            <Pencil size={11} /> View
-                                        </a>
-                                        {/* Delete */}
-                                        <button onClick={() => handleDeleteEvent(ev.id)}
-                                            className="p-1.5 rounded-lg border border-red-500/20 text-red-500/60 hover:text-red-400 hover:border-red-500/40 hover:bg-red-500/10 transition-colors">
-                                            <Trash2 size={13} />
-                                        </button>
-                                    </Card>
-                                ))}
+            {/* Conditionally Render Content */}
+            {activeTab === 'blog' ? (
+                <BlogEditor />
+            ) : activeTab === 'manage-blogs' ? (
+                <ManageBlogs />
+            ) : activeTab === 'manage-events' ? (
+                <ManageEvents />
+            ) : activeTab === 'analytics' ? (
+                <EventAnalytics />
+            ) : (
+                <Card className="border-white/10 w-full mb-8">
+                    <div className="p-4 border-b border-white/10 flex flex-col md:flex-row gap-4 items-center bg-white/5">
+                        <div className="flex flex-col md:flex-row gap-4 w-full justify-between items-center relative">
+                            <div className="relative w-full max-w-sm">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder={activeTab === 'registrations' ? "Search Reg: Name, Email or ID..." : "Search Users: Name, Roll No..."}
+                                    value={activeTab === 'registrations' ? searchTerm : userSearchTerm}
+                                    onChange={(e) => activeTab === 'registrations' ? setSearchTerm(e.target.value) : setUserSearchTerm(e.target.value)}
+                                    className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white focus:border-neon-cyan focus:outline-none transition-colors text-sm"
+                                />
                             </div>
-                        )
-                    }
-                </div>
+
+                            {activeTab === 'registrations' && (
+                                <select
+                                    className="bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white font-mono text-sm outline-none focus:border-neon-cyan max-w-sm"
+                                    value={selectedEventId}
+                                    onChange={(e) => {
+                                        setSelectedEventId(e.target.value);
+                                        // Optional: Recalculate stats based on filter if you want
+                                    }}
+                                >
+                                    <option value="all">All Registrations</option>
+                                    <option value="legacy">Legacy Recruitment (Phase 1-6)</option>
+                                    {eventsList.map(ev => (
+                                        <option key={ev.id} value={ev.id}>{ev.title}</option>
+                                    ))}
+                                </select>
+                            )}
+
+                            <div className="text-xs text-gray-500 font-mono">
+                                Showing {activeTab === 'registrations' ? filteredData.length : users.filter(u => u.display_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.roll_number?.toLowerCase().includes(userSearchTerm.toLowerCase())).length} records
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        {activeTab === 'registrations' ? (
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-black/50 text-gray-400 text-xs uppercase tracking-wider font-mono">
+                                        <th className="p-4 border-b border-white/10">Name</th>
+                                        <th className="p-4 border-b border-white/10">Roll No</th>
+                                        <th className="p-4 border-b border-white/10">Dept / Year</th>
+                                        <th className="p-4 border-b border-white/10">Contact</th>
+                                        <th className="p-4 border-b border-white/10">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {loading ? (
+                                        <tr>
+                                            <td colSpan="5" className="p-8 text-center text-gray-500 animate-pulse">Scanning Database...</td>
+                                        </tr>
+                                    ) : filteredData.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="5" className="p-8 text-center text-gray-500">No records found within sector.</td>
+                                        </tr>
+                                    ) : (
+                                        filteredData.map((reg) => (
+                                            <tr key={reg.id} className="hover:bg-white/5 transition-colors">
+                                                <td className="p-4 font-medium text-white">{reg.full_name}</td>
+                                                <td className="p-4 text-neon-cyan font-mono text-sm">{reg.roll_number}</td>
+                                                <td className="p-4 text-gray-300 text-sm">
+                                                    <span className="bg-white/10 px-2 py-1 rounded text-xs mr-2">{reg.department}</span>
+                                                    <span className="text-gray-500">Yr {reg.year}</span>
+                                                </td>
+                                                <td className="p-4 text-gray-400 text-sm">
+                                                    <div className="flex flex-col">
+                                                        <span>{reg.email}</span>
+                                                        <span className="text-xs opacity-50">{reg.phone}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-4 text-gray-500 text-xs font-mono">
+                                                    {new Date(reg.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="p-4 text-right">
+                                                    <button
+                                                        onClick={() => handleDelete(reg.id)}
+                                                        className="text-red-500 hover:text-red-400 text-xs uppercase font-bold tracking-wider px-2 py-1 border border-red-500/30 rounded hover:bg-red-500/10 transition-colors"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-black/50 text-gray-400 text-xs uppercase tracking-wider font-mono">
+                                        <th className="p-4 border-b border-white/10">User</th>
+                                        <th className="p-4 border-b border-white/10">Roll No</th>
+                                        <th className="p-4 border-b border-white/10">Department</th>
+                                        <th className="p-4 border-b border-white/10">Role</th>
+                                        <th className="p-4 border-b border-white/10">Joined</th>
+                                        <th className="p-4 border-b border-white/10 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {loading ? (
+                                        <tr>
+                                            <td colSpan="6" className="p-8 text-center text-gray-500 animate-pulse">Scanning Database...</td>
+                                        </tr>
+                                    ) : users.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="p-8 text-center text-gray-500">No users found.</td>
+                                        </tr>
+                                    ) : (
+                                        users.filter(u => u.display_name?.toLowerCase().includes(userSearchTerm.toLowerCase()) || u.roll_number?.toLowerCase().includes(userSearchTerm.toLowerCase())).map((u) => (
+                                            <tr key={u.id} className="hover:bg-white/5 transition-colors">
+                                                <td className="p-4">
+                                                    <div className="font-medium text-white">{u.display_name}</div>
+                                                    <div className="text-xs text-gray-500">{u.email}</div>
+                                                </td>
+                                                <td className="p-4 text-neon-purple font-mono text-sm">{u.roll_number || 'N/A'}</td>
+                                                <td className="p-4 text-gray-300 text-sm">
+                                                    <span className="bg-white/10 px-2 py-1 rounded text-xs">{u.department || 'N/A'}</span>
+                                                </td>
+                                                <td className="p-4">
+                                                    <span className={`px-2 py-1 rounded text-xs font-mono font-bold tracking-wider ${u.role === 'admin' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'}`}>
+                                                        {u.role || 'user'}
+                                                    </span>
+                                                </td>
+                                                <td className="p-4 text-gray-500 text-xs font-mono">
+                                                    {new Date(u.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td className="p-4 text-right flex items-center justify-end gap-2">
+                                                    {u.role !== 'admin' && (
+                                                        <button
+                                                            onClick={() => promoteToAdmin(u.id, u.role)}
+                                                            className="text-white hover:text-black text-xs uppercase font-bold tracking-wider px-3 py-1.5 border border-white/30 rounded hover:bg-white transition-colors"
+                                                        >
+                                                            Make Admin
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => handleProfileDelete(u.id, u.display_name)}
+                                                        className="text-red-500 hover:text-red-400 text-xs uppercase font-bold tracking-wider px-3 py-1.5 border border-red-500/30 rounded hover:bg-red-500/10 transition-colors"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                </Card>
             )}
         </div>
     );
