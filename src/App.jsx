@@ -8,6 +8,7 @@ import Contact from './pages/Contact';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import KonamiCode from './components/KonamiCode';
+import PhotoAdjust from './pages/PhotoAdjust';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/register" element={<Register />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/photo-adjust" element={<PhotoAdjust />} />
         </Routes>
       </div>
     </Router>
