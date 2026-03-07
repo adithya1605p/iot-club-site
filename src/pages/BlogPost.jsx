@@ -7,6 +7,7 @@ import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { supabase } from '../lib/supabaseClient';
+import '@google/model-viewer';
 
 const BlogPost = () => {
     const { id } = useParams();

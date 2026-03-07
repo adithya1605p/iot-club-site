@@ -4,7 +4,7 @@ export const projects = [
         title: "Smart Campus Navigation",
         description: "AR-based indoor navigation system for college campus to help students find classrooms and labs easily.",
         tags: ["AR", "Mobile", "IoT"],
-        status: "Completed",
+        status: "Planned",
         image: "https://images.unsplash.com/photo-1555664424-778a69022365?auto=format&fit=crop&q=80&w=800"
     },
     {
@@ -12,7 +12,7 @@ export const projects = [
         title: "Autonomous Drone Swarm",
         description: "Coordinated drone swarm for search and rescue operations, capable of mapping areas autonomously.",
         tags: ["Robotics", "AI", "Embedded"],
-        status: "In Progress",
+        status: "Planned",
         image: "https://images.unsplash.com/photo-1506947411487-a56738267384?auto=format&fit=crop&q=80&w=800"
     },
     {
@@ -20,7 +20,7 @@ export const projects = [
         title: "EcoSense Network",
         description: "Distributed air quality monitoring network using LoRaWAN sensors deployed across the city.",
         tags: ["IoT", "LoRaWAN", "Cloud"],
-        status: "Live",
+        status: "Planned",
         image: "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?auto=format&fit=crop&q=80&w=800"
     },
     {
@@ -28,7 +28,7 @@ export const projects = [
         title: "Gesture Controlled Arm",
         description: "Robotic arm controlled by hand gestures using computer vision and EMG sensors.",
         tags: ["Robotics", "CV", "Hardware"],
-        status: "Completed",
+        status: "Planned",
         image: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&q=80&w=800"
     },
     {
@@ -36,7 +36,7 @@ export const projects = [
         title: "Smart Mirror",
         description: "Interactive smart mirror displaying weather, news, and calendar events with voice control.",
         tags: ["IoT", "UI/UX", "Raspberry Pi"],
-        status: "In Progress",
+        status: "Planned",
         image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"
     },
     {

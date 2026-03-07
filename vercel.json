@@ -5,6 +5,10 @@
             "destination": "https://glkaksrfoznewagmeusk.supabase.co/:match*"
         },
         {
+            "source": "/arxiv/:match*",
+            "destination": "https://export.arxiv.org/:match*"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
