@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
-import { Download, Search, Users, PieChart, BarChart3, Lock, RefreshCw } from 'lucide-react';
+import { Download, Search, Users, PieChart, BarChart3, Lock, RefreshCw, CalendarPlus, Pencil, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const AdminDashboard = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -12,6 +12,16 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [stats, setStats] = useState({ total: 0, byDept: {}, byYear: {} });
+    const [adminTab, setAdminTab] = useState('registrations'); // registrations | events
+    // Events management state
+    const [dbEvents, setDbEvents] = useState([]);
+    const [eventsLoading, setEventsLoading] = useState(false);
+    const [newEvent, setNewEvent] = useState({
+        title: '', tagline: '', date: '', time: '', location: '',
+        category: '', cover_image: '', description: '', status: 'upcoming',
+    });
+    const [savingEvent, setSavingEvent] = useState(false);
+    const [showEventForm, setShowEventForm] = useState(false);
 
     // Simple env-based PIN (fallback to '1234' if not set)
     const ADMIN_PIN = import.meta.env.VITE_ADMIN_PIN || '1234';
@@ -116,11 +126,45 @@ const AdminDashboard = () => {
         a.click();
     };
 
+    const fetchDbEvents = async () => {
+        setEventsLoading(true);
+        const { data } = await supabase.from('events').select('id,title,status,date,category,registration_open').order('date_iso', { ascending: false });
+        if (data) setDbEvents(data);
+        setEventsLoading(false);
+    };
+
+    const handleCreateEvent = async (e) => {
+        e.preventDefault();
+        setSavingEvent(true);
+        await supabase.from('events').insert([newEvent]);
+        setNewEvent({ title: '', tagline: '', date: '', time: '', location: '', category: '', cover_image: '', description: '', status: 'upcoming' });
+        setShowEventForm(false);
+        fetchDbEvents();
+        setSavingEvent(false);
+    };
+
+    const handleStatusChange = async (id, status) => {
+        await supabase.from('events').update({ status }).eq('id', id);
+        fetchDbEvents();
+    };
+
+    const handleToggleReg = async (id, current) => {
+        await supabase.from('events').update({ registration_open: !current }).eq('id', id);
+        fetchDbEvents();
+    };
+
+    const handleDeleteEvent = async (id) => {
+        if (!window.confirm('Delete this event?')) return;
+        await supabase.from('events').delete().eq('id', id);
+        fetchDbEvents();
+    };
+
     const filteredData = registrations.filter(reg =>
         reg.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.roll_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
 
     if (!isAuthenticated) {
         return (
@@ -159,6 +203,17 @@ const AdminDashboard = () => {
                         <Download size={18} /> Export Data
                     </Button>
                 </div>
+            </div>
+
+            {/* ── Tab switcher ── */}
+            <div className="flex gap-1 mb-8 border-b border-white/10">
+                {[['registrations', 'Registrations'], ['events', 'Manage Events']].map(([key, label]) => (
+                    <button key={key}
+                        onClick={() => { setAdminTab(key); if (key === 'events') fetchDbEvents(); }}
+                        className={`px-5 py-3 text-sm font-semibold border-b-2 -mb-px transition-colors ${adminTab === key ? 'border-neon-cyan text-neon-cyan' : 'border-transparent text-gray-500 hover:text-gray-300'
+                            }`}
+                    >{label}</button>
+                ))}
             </div>
 
             {errorMsg && (
@@ -280,6 +335,100 @@ const AdminDashboard = () => {
                     </table>
                 </div>
             </Card>
+
+            {/* ── MANAGE EVENTS TAB ── */}
+            {adminTab === 'events' && (
+                <div>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-bold text-white">Events</h2>
+                        <button onClick={() => setShowEventForm(v => !v)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-sm font-semibold hover:bg-neon-cyan/20 transition-colors">
+                            <CalendarPlus size={15} /> New Event
+                        </button>
+                    </div>
+
+                    {/* Create form */}
+                    {showEventForm && (
+                        <Card className="mb-8 p-6 border-neon-cyan/20">
+                            <h3 className="text-white font-bold mb-4">Create Event</h3>
+                            <form onSubmit={handleCreateEvent} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[['title', 'Title *'], ['tagline', 'Tagline'], ['date', 'Date (display)'], ['time', 'Time'], ['location', 'Venue'], ['category', 'Category'], ['cover_image', 'Cover Image URL'],].map(([field, label]) => (
+                                    <div key={field}>
+                                        <label className="text-xs text-gray-500 mb-1 block">{label}</label>
+                                        <input
+                                            value={newEvent[field]} onChange={e => setNewEvent(p => ({ ...p, [field]: e.target.value }))}
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-neon-cyan focus:outline-none"
+                                            required={field === 'title'}
+                                        />
+                                    </div>
+                                ))}
+                                <div className="md:col-span-2">
+                                    <label className="text-xs text-gray-500 mb-1 block">Description</label>
+                                    <textarea rows={3} value={newEvent.description} onChange={e => setNewEvent(p => ({ ...p, description: e.target.value }))}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-neon-cyan focus:outline-none resize-none" />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-500 mb-1 block">Status</label>
+                                    <select value={newEvent.status} onChange={e => setNewEvent(p => ({ ...p, status: e.target.value }))}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-neon-cyan focus:outline-none">
+                                        <option value="upcoming">Upcoming</option>
+                                        <option value="live">Live</option>
+                                        <option value="ended">Ended</option>
+                                    </select>
+                                </div>
+                                <div className="md:col-span-2 flex gap-3 justify-end">
+                                    <button type="button" onClick={() => setShowEventForm(false)} className="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors">Cancel</button>
+                                    <button type="submit" disabled={savingEvent}
+                                        className="px-6 py-2 rounded-lg bg-neon-cyan text-black font-bold text-sm hover:bg-neon-cyan/80 transition-colors disabled:opacity-50">
+                                        {savingEvent ? 'Saving…' : 'Create Event'}
+                                    </button>
+                                </div>
+                            </form>
+                        </Card>
+                    )}
+
+                    {/* Events list */}
+                    {eventsLoading
+                        ? <p className="text-gray-500 text-center py-10">Loading events…</p>
+                        : (
+                            <div className="space-y-3">
+                                {dbEvents.map(ev => (
+                                    <Card key={ev.id} className="p-4 flex flex-wrap items-center gap-4 border-white/5">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-white font-semibold text-sm truncate">{ev.title}</p>
+                                            <p className="text-gray-500 text-xs">{ev.category} · {ev.date}</p>
+                                        </div>
+                                        {/* Status toggle */}
+                                        <select value={ev.status} onChange={e => handleStatusChange(ev.id, e.target.value)}
+                                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:border-neon-cyan focus:outline-none">
+                                            <option value="upcoming">Upcoming</option>
+                                            <option value="live">🔴 Live</option>
+                                            <option value="ended">Ended</option>
+                                        </select>
+                                        {/* Reg toggle */}
+                                        <button onClick={() => handleToggleReg(ev.id, ev.registration_open)}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${ev.registration_open ? 'border-green-500/40 text-green-400 bg-green-500/10' : 'border-white/10 text-gray-500 bg-white/5'
+                                                }`}>
+                                            {ev.registration_open ? <ToggleRight size={13} /> : <ToggleLeft size={13} />}
+                                            {ev.registration_open ? 'Reg Open' : 'Reg Closed'}
+                                        </button>
+                                        {/* Detail link */}
+                                        <a href={`/events/${ev.id}`} target="_blank" rel="noreferrer"
+                                            className="px-3 py-1.5 rounded-lg border border-white/10 text-xs text-gray-400 hover:text-white hover:border-white/30 transition-colors flex items-center gap-1">
+                                            <Pencil size={11} /> View
+                                        </a>
+                                        {/* Delete */}
+                                        <button onClick={() => handleDeleteEvent(ev.id)}
+                                            className="p-1.5 rounded-lg border border-red-500/20 text-red-500/60 hover:text-red-400 hover:border-red-500/40 hover:bg-red-500/10 transition-colors">
+                                            <Trash2 size={13} />
+                                        </button>
+                                    </Card>
+                                ))}
+                            </div>
+                        )
+                    }
+                </div>
+            )}
         </div>
     );
 };

@@ -10,6 +10,11 @@ export default defineConfig({
         target: 'https://glkaksrfoznewagmeusk.supabase.co',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/supabase/, '')
+      },
+      '/arxiv': {
+        target: 'https://export.arxiv.org',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/arxiv/, '')
       }
     }
   }
