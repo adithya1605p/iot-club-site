@@ -7,26 +7,43 @@ import BlogCard from '../components/learning/BlogCard';
 import NewsCard from '../components/learning/NewsCard';
 import PaperCard from '../components/learning/PaperCard';
 
-const VAULT_ITEMS = [
-    { id: 1, title: 'ESP32 Pinout & Specs', category: 'Microcontrollers', description: 'High-res diagram of the 38-pin ESP32 DEVKIT V1. Essential for wiring sensors and avoiding power shorts.', type: 'pdf', icon: <Cpu className="text-neon-cyan" size={20} />, link: '#', size: '2.4 MB' },
-    { id: 2, title: 'Arduino Uno R3 Reference', category: 'Microcontrollers', description: 'Official schematic, analog/digital pin mappings, and power limits for the standard Uno.', type: 'pdf', icon: <Cpu className="text-neon-purple" size={20} />, link: '#', size: '1.1 MB' },
-    { id: 3, title: 'DHT11 vs DHT22 Guide', category: 'Sensors', description: 'Comparison chart for temp/humidity sensors including pull-up resistor requirements and sample code.', type: 'pdf', icon: <Archive className="text-blue-400" size={20} />, link: '#', size: '0.8 MB' },
-    { id: 4, title: 'CP210x USB–UART Driver', category: 'Drivers', description: 'Windows/Mac driver to flash ESP32 and NodeMCU boards via USB. Fixes "COM Port not found" errors.', type: 'exe', icon: <Server className="text-green-400" size={20} />, link: 'https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers', size: 'External' },
-    { id: 5, title: 'CH340 Serial Driver', category: 'Drivers', description: 'Required for generic Arduino clones. Install this if your PC doesn\'t recognize your newly plugged-in board.', type: 'zip', icon: <Server className="text-green-400" size={20} />, link: '#', size: '1.5 MB' },
-    { id: 6, title: 'I2C Scanner Sketch (C++)', category: 'Code', description: 'Arduino sketch that scans the I2C bus and outputs hex addresses of all connected devices (LCDs, OLEDs).', type: 'code', icon: <FileText className="text-gray-400" size={20} />, link: '#', size: '2 KB' },
-];
+const iconMap = {
+    'cpu': <Cpu className="text-neon-cyan" size={20} />,
+    'archive': <Archive className="text-yellow-400" size={20} />,
+    'server': <Server className="text-green-400" size={20} />,
+    'file-text': <FileText className="text-gray-400" size={20} />,
+    'external-link': <ExternalLink className="text-red-500" size={20} />,
+    'book-open': <BookOpen className="text-neon-purple" size={20} />
+};
 
 const LearningHub = () => {
     const [activeTab, setActiveTab] = useState('insights');
     const [news, setNews] = useState([]);
     const [papers, setPapers] = useState([]);
     const [blogs, setBlogs] = useState([]);
+    const [vaultItems, setVaultItems] = useState([]);
+
     const [loadingNews, setLoadingNews] = useState(true);
     const [loadingPapers, setLoadingPapers] = useState(true);
     const [loadingBlogs, setLoadingBlogs] = useState(true);
+    const [loadingVault, setLoadingVault] = useState(false);
+
     const [searchQuery, setSearchQuery] = useState('');
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
+        // Check Auth Status
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        checkUser();
+
+        // Auth Listener
+        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user || null);
+        });
+
         const loadExternalData = async () => {
             // Fetch Blogs
             try {
@@ -47,7 +64,7 @@ const LearningHub = () => {
                 const newsData = await fetchIoTNews();
                 setNews(newsData);
                 setLoadingNews(false);
-            }, 500); // Artificial slight delay for smooth UI transition
+            }, 500);
 
             // Fetch Papers
             setTimeout(async () => {
@@ -57,7 +74,35 @@ const LearningHub = () => {
             }, 800);
         };
         loadExternalData();
+
+        return () => {
+            if (authListener && authListener.subscription) {
+                authListener.subscription.unsubscribe();
+            }
+        };
     }, []);
+
+    // Fetch Vault items dynamically when tab is clicked
+    useEffect(() => {
+        if (activeTab === 'vault' && user && vaultItems.length === 0) {
+            const fetchVault = async () => {
+                setLoadingVault(true);
+                try {
+                    const { data, error } = await supabase
+                        .from('vault')
+                        .select('*')
+                        .order('created_at', { ascending: true });
+                    if (error) throw error;
+                    setVaultItems(data || []);
+                } catch (err) {
+                    console.error("Error fetching vault:", err);
+                } finally {
+                    setLoadingVault(false);
+                }
+            };
+            fetchVault();
+        }
+    }, [activeTab, user]);
 
     const tabs = [
         { id: 'insights', label: 'Club Insights', icon: <BookOpen size={18} /> },
@@ -86,8 +131,8 @@ const LearningHub = () => {
         <div className="min-h-screen pt-24 pb-20 px-4 relative overflow-hidden">
             {/* Background Effects */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-                <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-neon-cyan/5 rounded-full blur-[120px]"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-neon-purple/5 rounded-full blur-[120px]"></div>
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(0,255,255,0.05)_0%,_transparent_70%)] rounded-full"></div>
+                <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(168,85,247,0.05)_0%,_transparent_70%)] rounded-full"></div>
             </div>
 
             <div className="container mx-auto max-w-7xl">
@@ -246,33 +291,64 @@ const LearningHub = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
-                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                             >
-                                {VAULT_ITEMS.map((item) => (
-                                    <div key={item.id} className="flex flex-col p-5 rounded-2xl bg-black/50 border border-white/10 hover:border-neon-cyan/40 group transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.08)]">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div className="p-2.5 bg-white/5 rounded-xl border border-white/10 group-hover:border-neon-cyan/30 transition-colors">
-                                                {item.icon}
-                                            </div>
-                                            <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded border ${item.type === 'pdf' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                    item.type === 'code' ? 'bg-white/10 text-gray-300 border-white/20' :
-                                                        'bg-green-500/10 text-green-400 border-green-500/20'
-                                                }`}>.{item.type}</span>
-                                        </div>
-                                        <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-1">{item.category}</p>
-                                        <h3 className="text-white font-bold mb-2 group-hover:text-neon-cyan transition-colors text-sm">{item.title}</h3>
-                                        <p className="text-gray-400 text-xs leading-relaxed flex-1 mb-4">{item.description}</p>
-                                        <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                                            <span className="text-xs text-gray-600 font-mono">{item.size}</span>
-                                            <a href={item.link} target={item.link !== '#' ? '_blank' : '_self'} rel="noreferrer"
-                                                className="flex items-center gap-1.5 text-xs font-mono font-bold px-3 py-1.5 rounded-lg border border-white/20 text-gray-300 hover:bg-neon-cyan hover:text-black hover:border-neon-cyan transition-all">
-                                                {item.type === 'pdf' ? <><ExternalLink size={12} /> VIEW</> :
-                                                    item.type === 'code' ? <><FileText size={12} /> GET</> :
-                                                        <><Download size={12} /> GET</>}
+                                {!user ? (
+                                    <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-dashed border-white/20 bg-white/5 rounded-2xl relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6">
+                                            <Archive size={48} className="text-gray-500 mb-4" />
+                                            <h3 className="text-2xl font-black text-white mb-2 font-mono">ENCRYPTED VAULT</h3>
+                                            <p className="text-gray-400 font-mono mb-6 max-w-sm">Level 2 Clearance required. Please authenticate your identity to access technical schematics, drivers, and engineering texts.</p>
+                                            <a href="/login">
+                                                <button className="bg-neon-cyan text-black px-6 py-3 rounded-lg font-bold font-mono tracking-widest hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,255,0.3)]">
+                                                    SYSTEM LOGIN
+                                                </button>
                                             </a>
                                         </div>
+                                        {/* Fake ghost grid for effect */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-20 filter blur-sm w-full">
+                                            {[1, 2, 3].map(i => (
+                                                <div key={i} className="bg-black/50 border border-white/10 h-40 rounded-2xl"></div>
+                                            ))}
+                                        </div>
                                     </div>
-                                ))}
+                                ) : loadingVault ? (
+                                    <div className="flex flex-col items-center justify-center py-20 text-neon-cyan">
+                                        <Loader2 className="animate-spin mb-4" size={48} />
+                                        <p className="font-mono tracking-widest uppercase">Decyphering Vault Contents...</p>
+                                    </div>
+                                ) : vaultItems.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {vaultItems.map((item) => (
+                                            <div key={item.id} className="flex flex-col p-5 rounded-2xl bg-black/50 border border-white/10 hover:border-neon-cyan/40 group transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,255,0.08)]">
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <div className="p-2.5 bg-white/5 rounded-xl border border-white/10 group-hover:border-neon-cyan/30 transition-colors">
+                                                        {iconMap[item.icon_type] || <FileText className="text-gray-400" size={20} />}
+                                                    </div>
+                                                    <span className={`text-[9px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded border ${item.type === 'pdf' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                        item.type === 'code' ? 'bg-white/10 text-gray-300 border-white/20' :
+                                                            'bg-green-500/10 text-green-400 border-green-500/20'
+                                                        }`}>.{item.type}</span>
+                                                </div>
+                                                <p className="text-xs font-mono text-gray-500 uppercase tracking-widest mb-1">{item.category}</p>
+                                                <h3 className="text-white font-bold mb-2 group-hover:text-neon-cyan transition-colors text-sm">{item.title}</h3>
+                                                <p className="text-gray-400 text-xs leading-relaxed flex-1 mb-4">{item.description}</p>
+                                                <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                                                    <span className="text-xs text-gray-600 font-mono">{item.size}</span>
+                                                    <a href={item.link} target={item.link !== '#' ? '_blank' : '_self'} rel="noreferrer"
+                                                        className="flex items-center gap-1.5 text-xs font-mono font-bold px-3 py-1.5 rounded-lg border border-white/20 text-gray-300 hover:bg-neon-cyan hover:text-black hover:border-neon-cyan transition-all">
+                                                        {item.type === 'pdf' ? <><ExternalLink size={12} /> VIEW</> :
+                                                            item.type === 'code' ? <><FileText size={12} /> GET</> :
+                                                                <><Download size={12} /> GET</>}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-20 text-gray-400 font-mono border border-dashed border-white/20 bg-white/5 rounded-2xl">
+                                        Vault is currently empty. Hardware manifests have not been indexed.
+                                    </div>
+                                )}
                             </motion.div>
                         )}
                     </AnimatePresence>
