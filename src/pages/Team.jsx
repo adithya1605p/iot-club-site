@@ -124,7 +124,23 @@ const Team = () => (
                         <p className="text-gray-400 text-sm mb-4">{member.bio}</p>
                         <div className="flex justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             {member.socials?.linkedin && (
-                                <a href={member.socials.linkedin} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white">
+                                <a
+                                    href={member.socials.linkedin}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-gray-400 hover:text-white relative"
+                                    onClick={(e) => {
+                                        if (member.name === "A. Lakshmi Deepak") {
+                                            e.preventDefault();
+                                            alert("SYSTEM COMPROMISED.\\nFLAG: R0NFVENURntMNGs1aG0xX2QzM3A0a180bjRuN2gwanV9");
+                                            console.log("CTF_FLAG: R0NFVENURntMNGs1aG0xX2QzM3A0a180bjRuN2gwanV9");
+                                            // Open the link after showing the flag
+                                            setTimeout(() => {
+                                                window.open(member.socials.linkedin, "_blank");
+                                            }, 100);
+                                        }
+                                    }}
+                                >
                                     <Linkedin size={18} />
                                 </a>
                             )}
